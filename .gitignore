@@ -1,0 +1,7 @@
+/env
+crunchbase_odm_csv/crunchbase_license.txt
+crunchbase_odm_csv/organizations.csv
+crunchbase_odm_csv/people.csv
+crunchbase_odm_json/crunchbase_license.txt
+crunchbase_odm_json/organizations.json
+crunchbase_odm_json/people.json

@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
 
 engine = create_engine("sqlite:///crunchbase_iqt.db", echo=False)
@@ -19,17 +19,17 @@ Base.query = session.query_property()
 
 
 ###############  Association Tables  ###############
-investmentcompany_investmenttype = Table('association', Base.metadata,
+investmentcompany_investmenttype = Table('investmentcompany_investmenttype', Base.metadata,
     Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
     Column('investmenttype_id', Integer, ForeignKey('investmenttype.id')),
     )
 
-investmentcompany_sectorfocus = Table('association', Base.metadata,
+investmentcompany_sectorfocus = Table('investmentcompany_sectorfocus', Base.metadata,
     Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
     Column('sectorfocus_id', Integer, ForeignKey('sectorfocus.id'))
     )
 
-portfoliocompany_category = Table('association', Base.metadata,
+portfoliocompany_category = Table('portfoliocompany_category', Base.metadata,
     Column('portfoliocompany_id', Integer, ForeignKey('portfoliocompany.id')),
     Column('category_id', Integer, ForeignKey('category.id'))
     )
@@ -50,11 +50,12 @@ class InvestmentCompany(Base):
     zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
-    description = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    
     partners = relationship("Partner", 
                     backref="investmentcompany")
     investment_types = relationship("InvestmentType",
-                    secondary=investmentcompany_investmenttype,
+                    secondary=investmentcompany_investmenttype,  ## going through the investmentcompany_investmenttype table to make the connection
                     backref="investmentcompanies")
     sectors = relationship("SectorFocus",
                     secondary=investmentcompany_sectorfocus,
@@ -74,6 +75,7 @@ class InvestmentDetail(Base):
     equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
     equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
     ownership_percent = Column(Integer, nullable=True)  ### IQT information
+
     investmentcompany = relationship("InvestmentCompany", backref="investmentdetail")  
     portfoliocompany = relationship("PortfolioCompany", backref="investmentdetail")
 
@@ -119,6 +121,7 @@ class PortfolioCompany(Base):
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
     total_funding = Column(Integer(10), nullable=True)  ## total funding received from all investment companies
+
     categories = relationship("Category",
                     secondary=portfoliocompany_category,
                     backref="portfoliocompanies")

@@ -2,6 +2,9 @@ import requests
 
 def main():
 	
+	#get a list of investor companies from CB
+	#for each company, get a list of their portfolio companies
+
 	sutter_hill_info = requests.get("http://api.crunchbase.com/v/2/organization/sutter-hill-ventures/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
 
 	iqt_info = requests.get("http://api.crunchbase.com/v/2/organization/in-q-tel/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
@@ -17,28 +20,30 @@ def main():
 	
 	# Iterate through each list, drilling down to the portfolio company name and appending the name to the appropriate list of portfolio companies.
 	# portfolio_companies = {"in-q-tel": [], "sutter_hill": []}
-	iqt_portfolio_companies = {"name": []}			
-	sutter_portfolio_companies = {"name": []}
-	common_investments = {"name": []}
+	iqt_portfolio_companies = {"name": [item["invested_in"]["name"] for item in list_of_iqt_investment_items]}			
+	sutter_portfolio_companies = {"name": [item["invested_in"]["name"] for item in list_of_sutter_investment_items]}
+	common_investments = [item for item in set(iqt_portfolio_companies["name"]) & set(sutter_portfolio_companies["name"])]  ## THIS IS AN AMAZING TIME SAVER!!!
+	# for item in common_investments:
+	# 	print item
+				
 
-	for item in list_of_iqt_investment_items:
-		portfolio_company_name = item["invested_in"]["name"]
-		iqt_portfolio_companies["name"].append(portfolio_company_name)
+	# for item in list_of_iqt_investment_items:
+	# 	portfolio_company_name = item["invested_in"]["name"]
+	# 	iqt_portfolio_companies["name"].append(portfolio_company_name)
 		# portfolio_companies["in-q-tel"].append(portfolio_company_name)
 
-	for item in list_of_sutter_investment_items:
-		portfolio_company_name = item["invested_in"]["name"]
-		sutter_portfolio_companies["name"].append(portfolio_company_name)
+	# for item in list_of_sutter_investment_items:
+	# 	portfolio_company_name = item["invested_in"]["name"]
+	# 	sutter_portfolio_companies["name"].append(portfolio_company_name)
 		# portfolio_companies["sutter_hill"].append(portfolio_company_name)
 
-	for portfolio_company in iqt_portfolio_companies["name"]:
-			if portfolio_company in sutter_portfolio_companies["name"]:
-				if portfolio_company not in common_investments["name"]:
-					common_investments["name"].append(portfolio_company)
+	# for portfolio_company in iqt_portfolio_companies["name"]:
+	# 		if portfolio_company in sutter_portfolio_companies["name"]:
+	# 			if portfolio_company not in common_investments["name"]:
+	# 				common_investments["name"].append(portfolio_company)
 			
-	for company in common_investments["name"]:	
+	return common_investments
 
-		print company
 
 
 if __name__ == "__main__":

@@ -15,15 +15,9 @@ def index():
 	#get a list of investor companies from CB
 	#for each company, get a list of their portfolio companies
 
-	sutter_hill_info = requests.get("http://api.crunchbase.com/v/2/organization/sutter-hill-ventures/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
+	list_of_sutter_investment_items = requests.get("http://api.crunchbase.com/v/2/organization/sutter-hill-ventures/investments?user_key=CRUNCHBASE_API_KEY").json()["data"]["items"]
 
-	iqt_info = requests.get("http://api.crunchbase.com/v/2/organization/in-q-tel/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
-
-	iqt_dict = iqt_info.json()
-	sutter_hill_dict = sutter_hill_info.json()
-
-	list_of_iqt_investment_items = iqt_dict["data"]["items"]
-	list_of_sutter_investment_items = sutter_hill_dict["data"]["items"]
+	list_of_iqt_investment_items  = requests.get("http://api.crunchbase.com/v/2/organization/in-q-tel/investments?user_key=CRUNCHBASE_API_KEY").json()["data"]["items"]
 		
 	iqt_portfolio_companies = {"name": [item["invested_in"]["name"] for item in list_of_iqt_investment_items]}			
 	sutter_portfolio_companies = {"name": [item["invested_in"]["name"] for item in list_of_sutter_investment_items]}

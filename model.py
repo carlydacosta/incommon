@@ -44,6 +44,7 @@ class InvestmentCompany(Base):
     __tablename__ = "investmentcompany"
 
     id = Column(Integer, primary_key = True)
+    permalink = Column(String(120), nullable=False)
     name = Column(String(120), nullable=True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
@@ -64,20 +65,21 @@ class InvestmentCompany(Base):
 
 
 # Investment details as a result of an investment company and a portfolio company relationship   
-class InvestmentDetail(Base):
-    __tablename__ = "investmentdetail"
+class Investment(Base):
+    __tablename__ = "investment"
 
     id = Column(Integer, primary_key = True)
     investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'), nullable=False)
     portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
+    
     money_invested = Column(Integer, nullable=True)  ### Total invested into a portfolio company by an investment company
     funding_round = Column(String(15), nullable=True) ### Seed, Venture, Series A - C
     equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
     equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
     ownership_percent = Column(Integer, nullable=True)  ### IQT information
 
-    investmentcompany = relationship("InvestmentCompany", backref="investmentdetail")  
-    portfoliocompany = relationship("PortfolioCompany", backref="investmentdetail")
+    investmentcompany = relationship("InvestmentCompany", backref="investment")  
+    portfoliocompany = relationship("PortfolioCompany", backref="investment")
 
 
 
@@ -97,7 +99,7 @@ class Partner(Base):
 class InvestmentType(Base):
     __tablename__ = "investmenttype"
     id = Column(Integer, primary_key = True)
-    type_description = Column(String(64), nullable=True)  ## seed, early stage enture, later stage venture
+    type_description = Column(String(120), nullable=True)  ## seed, early stage enture, later stage venture
 
 
 # Sectors in which an investment company typically puts funds into
@@ -105,7 +107,7 @@ class InvestmentType(Base):
 class SectorFocus(Base):
     __tablename__ = "sectorfocus"
     id = Column(Integer, primary_key = True)
-    sector_name = Column(String(30), nullable=True)  ## analytics, software, mobile, SaaS, advertising, curated web, etc
+    sector_name = Column(String(120), nullable=True)  ## analytics, software, mobile, SaaS, advertising, curated web, etc
 
 
 # Information particular to each company that has received funds from an investment company 
@@ -120,7 +122,7 @@ class PortfolioCompany(Base):
     zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
-    total_funding = Column(Integer(10), nullable=True)  ## total funding received from all investment companies
+    total_funding = Column(Integer(15), nullable=True)  ## total funding received from all investment companies
 
     categories = relationship("Category",
                     secondary=portfoliocompany_category,
@@ -133,7 +135,7 @@ class Category(Base):
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
-    category_name = Column(String(30), nullable=True)  ## analytics, software, security, storage, enterprise, etc
+    category_name = Column(String(120), nullable=True)  ## analytics, software, security, storage, enterprise, etc
 
 
 

@@ -1,17 +1,7 @@
-from flask import Flask, render_template
-import os, requests
+import requests
 
-
-# configuration
-CRUNCHBASE_API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
-
-
-
-app = Flask(__name__)
-
-@app.route("/")
-def index():
+def main():
+	
 	sutter_hill_info = requests.get("http://api.crunchbase.com/v/2/organization/sutter-hill-ventures/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
 
 	iqt_info = requests.get("http://api.crunchbase.com/v/2/organization/in-q-tel/investments?user_key=f0e2f7c3fd87b6dc6bc38c5ec8e7baf7")
@@ -48,11 +38,8 @@ def index():
 			
 	for company in common_investments["name"]:	
 
-		return company
-	
-	return render_template("index.html",
-		companies=company)
+		print company
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	main()

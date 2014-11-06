@@ -11,21 +11,31 @@ session = scoped_session(sessionmaker(bind=engine,
 Base = declarative_base()
 Base.query = session.query_property()
 
-### Data relationship
+###############  Data relationship  ###############
 # One2One = one to one relationship
 # One2M = one to many relationship
 # M2M = many to many relationship
 
-### Class declarations
 
-# Table collecting the many to many relationships
-association_table = Table('association', Base.metadata,
+
+###############  Association Tables  ###############
+investmentcompany_investmenttype = Table('association', Base.metadata,
     Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
-    Column('portfoliocompany_id', Integer, ForeignKey('portfoliocompany.id')),
     Column('investmenttype_id', Integer, ForeignKey('investmenttype.id')),
-    Column('sectorfocus_id', Integer, ForeignKey('sectorfocus.id')),
+    )
+
+investmentcompany_sectorfocus = Table('association', Base.metadata,
+    Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
+    Column('sectorfocus_id', Integer, ForeignKey('sectorfocus.id'))
+    )
+
+portfoliocompany_category = Table('association', Base.metadata,
+    Column('portfoliocompany_id', Integer, ForeignKey('portfoliocompany.id')),
     Column('category_id', Integer, ForeignKey('category.id'))
     )
+
+
+############### Class declarations  ###################
 
 # Information particular to each investment company
 # M2M: An investment company will have many portfolio companies, investment types, sector focuses.  Vice versa.
@@ -40,24 +50,30 @@ class InvestmentCompany(Base):
     zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
+    description = Column(String, nullable=True)
     partners = relationship("Partner", 
-                    secondary=association_table,
                     backref="investmentcompany")
-    portfoliocompanies = relationship("PortfolioCompany",
-                    secondary=association_table,
-                    backref="portfoliocompany")
-    investmenttypes = relationship("InvestmentType",
-                    secondary=association_table,
-                    backref="investmenttype")
-    sectorfocuses = relationship("SectorFocus",
-                    secondary=association_table,
-                    backref="sectorfocus")
+
+class InvestmentDetail(Base):
+    __tablename__ = "investmentdetail"
+
+    id = Column(Integer, primary_key = True)
+    investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'), nullable=False)
+    portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
+    money_invested = Column(Integer, nullable=True)
+    funding_round = Column(String(15), nullable=True) ### Seed, Venture, Series A - C
+    equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
+    equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
+    ownership_percent = Column(Integer, nullable=True)  ### IQT information
+    investmentcompany = relationship("InvestmentCompany", backref="investmentdetail")  
+    portfoliocompany = relationship("PortfolioCompany", backref="investmentdetail")
+
 
 
 # Information particular to each investment company Partner
 # M2One: Many partners belong to only one investment company.
 class Partner(Base):
-    __tablename__ = "partner"
+    __tablename__ = "partner"  ## Person who works at an investment company who is responsible for a specific portfolio company
 
     id = Column(Integer, primary_key=True)
     first_name = Column(String(120), nullable=True)
@@ -70,7 +86,7 @@ class Partner(Base):
 class InvestmentType(Base):
     __tablename__ = "investmenttype"
     id = Column(Integer, primary_key = True)
-    type_description = Column(String(64), nullable=True)
+    type_description = Column(String(64), nullable=True)  ## seed, early stage enture, later stage venture
     investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'))
 
 
@@ -79,32 +95,33 @@ class InvestmentType(Base):
 class SectorFocus(Base):
     __tablename__ = "sectorfocus"
     id = Column(Integer, primary_key = True)
-    sector_name = Column(String(30), nullable=True)
+    sector_name = Column(String(30), nullable=True)  ## analytics, software, mobile, SaaS, advertising, curated web, etc
     investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'))
+
 
 # Information particular to each company that has received funds from an investment company 
 # M2M: A portfolio company has many investment companies and categories.  Vice versa.
 class PortfolioCompany(Base):
-    __tablename__ = "portfoliocompany"
+    __tablename__ = "portfoliocompany"  ## company receiving funding from investment companies
     
     id = Column(Integer, primary_key=True)
     company_name = Column(String(120), nullable=True)
-    equity_percent_first_trans = Column(Integer, nullable=True)
-    equity_percent_second_trans = Column(Integer, nullable=True)
-    ownership_percent = Column(Integer, nullable=True)
+    city = Column(String(64), nullable=True)
+    state = Column(String(64), nullable=True)
+    zipcode = Column(String(15), nullable=True)
+    homepage_url = Column(String(30), nullable=True)
+    founded = Column(DateTime, nullable=True)
+    total_funding = Column(Integer(10), nullable=True)
     investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'))
-    categories = relationship("Category",
-                    secondary=association_table,
-                    backref="portfoliocompany")
 
 
-# Categories to which each portfolio company belongs.
+# Categories to which each portfolio company product/service belongs.
 # M2M: A portfolio company can have many categories and each category belongs to many companies.
 class Category(Base):
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
-    category_name = Column(String(30), nullable=True)
+    category_name = Column(String(30), nullable=True)  ## analytics, software, security, storage, enterprise, etc
     portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'))
 
 

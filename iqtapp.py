@@ -48,10 +48,10 @@ def index():
 			
 	for company in common_investments["name"]:	
 
-		return company
+		print company
 	
 	return render_template("index.html",
-		companies=company)
+		common_investments=common_investments)
 
 
 if __name__ == "__main__":

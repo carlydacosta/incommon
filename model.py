@@ -20,10 +20,6 @@ Base.query = session.query_property()
 
 
 ###############  Association Tables  ###############
-investmentcompany_investmenttype = Table('investmentcompany_investmenttype', Base.metadata,
-    Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
-    Column('investmenttype_id', Integer, ForeignKey('investmenttype.id')),
-    )
 
 investmentcompany_sectorfocus = Table('investmentcompany_sectorfocus', Base.metadata,
     Column('investmentcompany_id', Integer, ForeignKey('investmentcompany.id')),
@@ -49,16 +45,13 @@ class InvestmentCompany(Base):
     name = Column(String(120), nullable=True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
-    zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
     description = Column(Text, nullable=True)
+    number_of_investments = Column(Integer, nullable = True)
     
     partners = relationship("Partner", 
                     backref="investmentcompany")
-    investment_types = relationship("InvestmentType",
-                    secondary=investmentcompany_investmenttype,  ## going through the investmentcompany_investmenttype table to make the connection
-                    backref="investmentcompanies")
     sectors = relationship("SectorFocus",
                     secondary=investmentcompany_sectorfocus,
                     backref="investmentcompanies")
@@ -92,15 +85,8 @@ class Partner(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(120), nullable=True)
     last_name = Column(String(120), nullable=True)
+    title = Column(String(120), nullable=True)
     investmentcompany_id = Column(Integer, ForeignKey('investmentcompany.id'))
-
-
-# Types of investments that an investment company makes
-# M2M:  An investment type can belong to many investment companies and an investment company can have many investment types.
-class InvestmentType(Base):
-    __tablename__ = "investmenttype"
-    id = Column(Integer, primary_key = True)
-    type_description = Column(String(120), nullable=True)  ## seed, early stage enture, later stage venture
 
 
 # Sectors in which an investment company typically puts funds into
@@ -108,7 +94,9 @@ class InvestmentType(Base):
 class SectorFocus(Base):
     __tablename__ = "sectorfocus"
     id = Column(Integer, primary_key = True)
-    sector_name = Column(String(120), nullable=True)  ## analytics, software, mobile, SaaS, advertising, curated web, etc
+    sector1 = Column(String(120), nullable=True)
+    sector2 = Column(String(120), nullable=True) 
+    sector3 = Column(String(120), nullable=True)   ## analytics, software, mobile, SaaS, advertising, curated web, etc
 
 
 # Information particular to each company that has received funds from an investment company 
@@ -117,14 +105,17 @@ class PortfolioCompany(Base):
     __tablename__ = "portfoliocompany"  ## company receiving funding from investment companies
     
     id = Column(Integer, primary_key=True)
+    uuid = Column(Integer, primary_key=True)
     company_name = Column(String(120), nullable=True)
+    founder1 = Column(String(120), nullable=True)
+    founder2 = Column(String(120), nullable=True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
-    zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
     total_funding = Column(Integer, nullable=True)
-
+    description = Column(Text, nullable=True)
+    
     categories = relationship("Category",
                     secondary=portfoliocompany_category,
                     backref="portfoliocompanies")
@@ -136,7 +127,10 @@ class Category(Base):
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
-    category_name = Column(String(120), nullable=True)  ## analytics, software, security, storage, enterprise, etc
+    category1 = Column(String(120), nullable=True)  ## analytics, software, security, storage, enterprise, etc
+    category2 = Column(String(120), nullable=True)
+    category3 = Column(String(120), nullable=True)
+    
 
 
 

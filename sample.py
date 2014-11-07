@@ -8,112 +8,130 @@ APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 def main():
 	
-	#get a list of investment companies from CB
+	# request a list of investment companies
 	investment_companies = requests.get("http://api.crunchbase.com/v/2/organizations?organization_types=investor&user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
+
+	# investment company permalinks
+	ic_permalinks = [item["path"] for item in investment_companies]	
 	
-	permalinks = []
+	print "permalinks!", ic_permalinks[1:5]
 
 	for item in investment_companies:
+		
 		investmentcompany = model.InvestmentCompany(permalink=item["path"], name=item["name"], )
 		model.session.add(investmentcompany)
+
+		print "instances of Investment Company", investmentcompany
 		
-		permalinks.append(item["path"])
-		#now iterate over the permalikes to query the API again and get the investment company items.  then use same logic as above to create instance of the portfolio company
+		for item in ic_permalinks:
+			# request individual investment company details using permalink
+			ic_data = requests.get("http://api.crunchbase.com/v/2/"+item+"/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]
+			
+			# creat investment company instance with data available in details
+			investmentcompany = model.InvestmentCompany(homepage_url=ic_data["properties"]["homepage_url"], description=ic_data["properties"]["short_description"], founded=ic_data["properties"]["founded_on"], number_of_investments=ic_data["properties"]["number_of_investments"])
+			model.session.add(investmentcompany)
 
-	
-	
+			print "additions to investment company instances", investmentcompany
+			
+			for item in ic_data["relationships"]["headquarters"]:
+				investmentcompany = model.InvestmentCompany(city=item["city"], state=item["region"])
+				model.session.add(investmentcompany)
+			print "made it through investment company"
 
-	#needed to get portfolio companies
-	investment_company_items = requests.get("http://api.crunchbase.com/v/2/"+permalink+"/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
-	# print investment_company_items
-	
-	
-	portfolio_companies_dict = {"name": [item["invested_in"]["name"] for item in investment_company_items]}
-	#print portfolio_companies_dict
-	
-	#nice list of all portfolio companies of one investment company
-	
-	
-	
-	for company in portfolio_companies_dict["name"]:
-		portfoliocompany = model.PortfolioCompany(name=company)
-		model.session.add(portfoliocompany)
-	
+			# create sector focus instance with data available in details
+			for item in ic_data["properties"]["sectors"]:
+				sectorfocus = model.SectorFocus(sector1=item[0], sector2=item[1], sector3=item[2])
+				model.session.add(sectorfocus)
+			print "made it through sectors"
+
+			# create parter instance with data available in details
+			for item in ic_data["relationships"]["current_team"]:
+				partner = model.Partner(first_name=item["first_name"], last_name=item["last_name"], title=item["title"])
+				model.session.add(partner)
+			print "made it through partners"
+							
+			# portfolio company permalinks
+			pc_permalinks = [item["invested_in"]["path"] for item in ic_data["relationships"]["investments"]]  
+			# create portfolio company instance with data available in details
+			for item in ic_data["relationships"]["investments"]:
+				portfoliocompany = model.PortfolioCompany(name=item["invested_in"]["name"], permalink=item["invested_in"]["path"])
+				model.session.add(portfoliocompany)
+
+			print "company permalinks", pc_permalinks[1:5]	
+
 	model.session.commit()
 
-	# investment_company = model.InvestmentCompany(permalink=permalink, name=name, city=city, state=state,zipcode=zipcode, homepage_url=homepage_url, founded=founded, description=description)
-	
-
-	
-	
-
-	
-
-
-
-
-
-
-
-
-
-#user select investment company 1 and company 2 to find common investments
-
-
-
-
-
-
-	# for investment_company in investment_company_dict["name"]:  # investment_company_dict["name"] gives me the value to the name key, which is a list, so I have to iterate over the list
-
-	# 	standardized_investment_co = investment_company.lower().replace("(", " ").replace(")", " ").replace(",", "").replace(" | ", " ").replace(".", " ").replace(" - ", "-").replace(" ","-").replace("--", "-")
-	# 	standardized_investment_co_items = requests.get("http://api.crunchbase.com/v/2/organization/"+standardized_investment_co+"/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
-	
-
-	# Need to iterate over the list above and for each item in the list, go to crunchbase and grab the names of their investments
-		
-	#for each company, get a list of their portfolio companies
-	# list_of_sutter_investment_items = requests.get("http://api.crunchbase.com/v/2/organization/sutter-hill-ventures/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
-	
-	# list_of_iqt_investment_items  = requests.get("http://api.crunchbase.com/v/2/organization/in-q-tel/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
-
-######### combined these lines in the two lines above ############	
-	# The response is json object
-	# Turn into a dictionary with .json()
-	# iqt_dict = iqt_info.json()
-	# sutter_hill_dict = sutter_hill_info.json()
-
-	# Traverse through the dictionary to where the list of investment items are
-	# list_of_iqt_investment_items = iqt_dict["data"]["items"]
-	# list_of_sutter_investment_items = sutter_hill_dict["data"]["items"]
-###################################################################
-	
-	# Iterate through each investment item list, drilling down to the portfolio company name and appending the name to the appropriate list of portfolio companies.
-	# iqt_portfolio_companies_dict = {"name": [item["invested_in"]["name"] for item in list_of_iqt_investment_items]}			
-	# sutter_portfolio_companies_dict = {"name": [item["invested_in"]["name"] for item in list_of_sutter_investment_items]}
-	# common_investments = [item for item in set(iqt_portfolio_companies_dict["name"]) & set(sutter_portfolio_companies_dict["name"])]  ## THIS IS AN AMAZING TIME SAVER!!!
-	# for item in common_investments:
-		#print item
-				
-
-	# for item in list_of_iqt_investment_items:
-	# 	portfolio_company_name = item["invested_in"]["name"]
-	# 	iqt_portfolio_companies["name"].append(portfolio_company_name)
-		# portfolio_companies["in-q-tel"].append(portfolio_company_name)
-
-	# for item in list_of_sutter_investment_items:
-	# 	portfolio_company_name = item["invested_in"]["name"]
-	# 	sutter_portfolio_companies["name"].append(portfolio_company_name)
-		# portfolio_companies["sutter_hill"].append(portfolio_company_name)
-
-	# for portfolio_company in iqt_portfolio_companies["name"]:
-	# 		if portfolio_company in sutter_portfolio_companies["name"]:
-	# 			if portfolio_company not in common_investments["name"]:
-	# 				common_investments["name"].append(portfolio_company)
-			
-	# return common_investments
-
-
+	# common_investments = [item for item in set(investmentcompany1) & set(investmentcompany2)]  ## THIS IS AN AMAZING TIME SAVER!!!
 
 if __name__ == "__main__":
-	main()
+	main()				
+
+############
+	#investment company details through permalink
+		# metadata
+		# data
+			# properties
+				# homepage_url
+				# short descript
+				# founded_on
+				# number_of_investments
+				# sectors   ------> use for sector focus
+					# items
+				
+			# relationships
+				# founders
+					# items
+				# current team  -----> use for partners
+					# items
+						# first_name
+						# last_name
+						# title
+				# headquarters
+					# items
+						# city
+						# region (shows state)
+				# investments
+					# items
+						# invested_in
+							# name
+							# path (PERMALINK!)  -------> use to look up company
+
+				# websites (linkedin twitter etc) ---> use for later
+					# items
+				# news  ------> use for later
+					# items
+
+	#portfolio company details through permalink
+		# metadata
+		# data
+			# uuid
+			# properties
+				# homepage_url
+				# short descript
+				# founded_on
+				# sectors   ------> use for sector focus
+				# number_of_investments
+				# total_funding_usd (not formatted, just integers)
+			# relationships
+				# founders
+					# items
+				# headquarters
+					# items
+						# city
+						# region (shows state)
+				# funding_rounds
+					# items
+						# path -------> use to look up funding round details
+				# categories
+					# items
+						# name  ------> use for category
+				# primary_image
+					# items
+						# path ----> url to the image
+				# websites (linkedin twitter etc) ---> use for later
+					# items
+				# news  ------> use for later
+					# items
+
+	
+#############

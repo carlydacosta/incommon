@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
 
-engine = create_engine("sqlite:///crunchbase_iqt.db", echo=False)
+
+engine = create_engine("sqlite:///crunchbase_iqt.db", echo=True)
 session = scoped_session(sessionmaker(bind=engine,
                                     autocommit = False,
                                     autoflush = False))
@@ -122,7 +123,7 @@ class PortfolioCompany(Base):
     zipcode = Column(String(15), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
-    total_funding = Column(Integer(15), nullable=True)  ## total funding received from all investment companies
+    total_funding = Column(Integer, nullable=True)
 
     categories = relationship("Category",
                     secondary=portfoliocompany_category,

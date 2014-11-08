@@ -41,14 +41,15 @@ class InvestmentCompany(Base):
     __tablename__ = "investmentcompany"
 
     id = Column(Integer, primary_key = True)
+    uuid = Column(Integer, nullable=False)
     permalink = Column(String(120), nullable=False)
     name = Column(String(120), nullable=True)
-    city = Column(String(64), nullable=True)
-    state = Column(String(64), nullable=True)
     homepage_url = Column(String(30), nullable=True)
     founded = Column(DateTime, nullable=True)
     description = Column(Text, nullable=True)
     number_of_investments = Column(Integer, nullable = True)
+    city = Column(String(64), nullable=True)
+    state = Column(String(64), nullable=True)
     
     partners = relationship("Partner", 
                     backref="investmentcompany")
@@ -94,9 +95,7 @@ class Partner(Base):
 class SectorFocus(Base):
     __tablename__ = "sectorfocus"
     id = Column(Integer, primary_key = True)
-    sector1 = Column(String(120), nullable=True)
-    sector2 = Column(String(120), nullable=True) 
-    sector3 = Column(String(120), nullable=True)   ## analytics, software, mobile, SaaS, advertising, curated web, etc
+    sector = Column(String(120), nullable=True)  ## analytics, software, mobile, SaaS, advertising, curated web, etc
 
 
 # Information particular to each company that has received funds from an investment company 
@@ -105,10 +104,8 @@ class PortfolioCompany(Base):
     __tablename__ = "portfoliocompany"  ## company receiving funding from investment companies
     
     id = Column(Integer, primary_key=True)
-    uuid = Column(Integer, primary_key=True)
+    uuid = Column(Integer, nullable=False)
     company_name = Column(String(120), nullable=True)
-    founder1 = Column(String(120), nullable=True)
-    founder2 = Column(String(120), nullable=True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
     homepage_url = Column(String(30), nullable=True)
@@ -127,9 +124,7 @@ class Category(Base):
     __tablename__ = "category"
 
     id = Column(Integer, primary_key=True)
-    category1 = Column(String(120), nullable=True)  ## analytics, software, security, storage, enterprise, etc
-    category2 = Column(String(120), nullable=True)
-    category3 = Column(String(120), nullable=True)
+    category = Column(String(120), nullable=True)  ## analytics, software, security, storage, enterprise, etc
     
 
 

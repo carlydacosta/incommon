@@ -5,61 +5,118 @@ import requests, os, model, json #ast?
 CRUNCHBASE_API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
 APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
+DATA="data"
+ITEMS="items"
+PATH="path"
+PROPERTIES="properties"
+RELATIONSHIPS="relationships"
+HEADQUARTERS="headquarters"
+
 
 def main():
-	
-	# request a list of investment companies
-	investment_companies = requests.get("http://api.crunchbase.com/v/2/organizations?organization_types=investor&user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]["items"]
 
-	# investment company permalinks
-	ic_permalinks = [item["path"] for item in investment_companies]	
-	
-	print "permalinks!", ic_permalinks[1:5]
+	portfolio_company_uuids = set()
+	sectors_set = set()
 
-	for item in investment_companies:
+##############  Instantiating Investment Companies ###############	
+	
+	# request a list of investment company paths (i.e. permalinks)
+	investment_companies = requests.get("http://api.crunchbase.com/v/2/organizations?organization_types=investor&user_key="+str(CRUNCHBASE_API_KEY)).json()[DATA][ITEMS]
+
+	for company in investment_companies:
+		# get the path to call investment company details
+		permalink = company[PATH]
+
+		icompany_data = requests.get("http://api.crunchbase.com/v/2/"+permalink+"?user_key="+str(CRUNCHBASE_API_KEY)).json()[DATA]
 		
-		investmentcompany = model.InvestmentCompany(permalink=item["path"], name=item["name"], )
+		name = icompany_data[PROPERTIES]["name"]
+		homepage_url = icompany_data[PROPERTIES]["homepage_url"]
+		founded = icompany_data[PROPERTIES]["founded_on"]
+		description = icompany_data[PROPERTIES]["short_description"]
+		number_of_investments = icompany_data[PROPERTIES]["number_of_investments"]
+		city = icompany_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["city"]
+		state = icompany_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["region"]
+
+		investmentcompany = model.InvestmentCompany(
+			permalink=permalink, 
+			name=name, 
+			homepage_url=homepage_url,
+			founded=founded,
+			description=description,
+			number_of_investments=number_of_investments,
+			city=city,
+			state=state)
+
 		model.session.add(investmentcompany)
 
-		print "instances of Investment Company", investmentcompany
+		#use investmentcompany.id for when investmentcompany_id is in a column
 		
-		for item in ic_permalinks:
-			# request individual investment company details using permalink
-			ic_data = requests.get("http://api.crunchbase.com/v/2/"+item+"/investments?user_key="+str(CRUNCHBASE_API_KEY)).json()["data"]
+		
+	##############  Instantiating Portfolio Companies ###############		
+
+		#create portfolio company instance
+		for item in icompany_data[RELATIONSHIPS]["investments"][ITEMS]:	
+
+			uuid = pcompany_data["uuid"]
 			
-			# creat investment company instance with data available in details
-			investmentcompany = model.InvestmentCompany(homepage_url=ic_data["properties"]["homepage_url"], description=ic_data["properties"]["short_description"], founded=ic_data["properties"]["founded_on"], number_of_investments=ic_data["properties"]["number_of_investments"])
-			model.session.add(investmentcompany)
-
-			print "additions to investment company instances", investmentcompany
+			if uuid not in portfolio_company_uuids:		
+				# get the path to call portfolio company details
+				pc_permalink = item["invested_in"][PATH]   
 			
-			for item in ic_data["relationships"]["headquarters"]:
-				investmentcompany = model.InvestmentCompany(city=item["city"], state=item["region"])
-				model.session.add(investmentcompany)
-			print "made it through investment company"
-
-			# create sector focus instance with data available in details
-			for item in ic_data["properties"]["sectors"]:
-				sectorfocus = model.SectorFocus(sector1=item[0], sector2=item[1], sector3=item[2])
-				model.session.add(sectorfocus)
-			print "made it through sectors"
-
-			# create parter instance with data available in details
-			for item in ic_data["relationships"]["current_team"]:
-				partner = model.Partner(first_name=item["first_name"], last_name=item["last_name"], title=item["title"])
-				model.session.add(partner)
-			print "made it through partners"
+				pcompany_data = requests.get("http://api.crunchbase.com/v/2/"+pc_permalink+"?user_key="+str(CRUNCHBASE_API_KEY)).json()[DATA]
 							
-			# portfolio company permalinks
-			pc_permalinks = [item["invested_in"]["path"] for item in ic_data["relationships"]["investments"]]  
-			# create portfolio company instance with data available in details
-			for item in ic_data["relationships"]["investments"]:
-				portfoliocompany = model.PortfolioCompany(name=item["invested_in"]["name"], permalink=item["invested_in"]["path"])
+				company_name = pcompany_data["name"]
+				city = pcompany_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["city"]
+				state = pcompany_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][1]["region"]
+				homepage_url = pcompany_data["homepage_url"]
+				founded = pcompany_data["founded_on"]
+				total_funding = pcompany_data["total_funding_usd"]
+				description = pcompany_data["short_description"]
+
+				portfoliocompany = model.PortfolioCompany(
+					permalink=permalink,
+					company_name=company_name,
+					city=city,
+					state=state,
+					homepage_url=homepage_url,
+					founded=founded,
+					total_funding=total_funding,
+					description=description)
+
 				model.session.add(portfoliocompany)
 
-			print "company permalinks", pc_permalinks[1:5]	
+				portfolio_company_uuids.add(uuid)
+		
+	##############  Instantiating Investment Company Partners ###############	
+		
+		# create parter instance with data available in details
+		for partner in icompany_data[RELATIONSHIPS]["current_team"]:
+			
+			partner = model.Partner(
+				first_name=partner["first_name"],
+				last_name=partner["last_name"],
+				title=partner["title"],
+				investmentcompany_id=investmentcompany.id)
+			
+			model.session.add(partner)
+		
+
+	# ##############  Instantiating Investment Company Sector Focuses ###############
+
+		# create sector focus instance with data available in details
+		for sector in icompany_data[PROPERTIES]["sectors"]:
+			
+			if sector not in sectors_set:
+
+				sector = model.SectorFocus(sector=sector)
+				
+				model.session.add(sectorfocus)
+
+				sectors_set.add(sector)
+		
 
 	model.session.commit()
+
 
 	# common_investments = [item for item in set(investmentcompany1) & set(investmentcompany2)]  ## THIS IS AN AMAZING TIME SAVER!!!
 
@@ -101,11 +158,12 @@ if __name__ == "__main__":
 				# news  ------> use for later
 					# items
 
-	#portfolio company details through permalink
+#portfolio company details through permalink
 		# metadata
 		# data
 			# uuid
 			# properties
+				# name
 				# homepage_url
 				# short descript
 				# founded_on
@@ -131,7 +189,5 @@ if __name__ == "__main__":
 				# websites (linkedin twitter etc) ---> use for later
 					# items
 				# news  ------> use for later
-					# items
-
+					# items	
 	
-#############

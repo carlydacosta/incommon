@@ -1,0 +1,6 @@
+#how to create the db
+
+delete the .db if currently exists
+
+engine = create_engine("sqlite:///crunchbase_iqt.db", echo=True)
+Base.metadata.create_all(engine)

@@ -1,0 +1,67 @@
+############
+	#investment company details through permalink
+		# metadata
+		# data
+			# properties
+				# homepage_url
+				# short descript
+				# founded_on
+				# number_of_investments
+				# sectors   ------> use for sector focus
+					# items
+				
+			# relationships
+				# founders
+					# items
+				# current team  -----> use for partners
+					# items
+						# first_name
+						# last_name
+						# title
+				# headquarters
+					# items
+						# city
+						# region (shows state)
+				# investments
+					# items
+						# invested_in
+							# name
+							# path (PERMALINK!)  -------> use to look up company
+
+				# websites (linkedin twitter etc) ---> use for later
+					# items
+				# news  ------> use for later
+					# items
+
+#portfolio company details through permalink
+		# metadata
+		# data
+			# uuid
+			# properties
+				# name
+				# homepage_url
+				# short descript
+				# founded_on
+				# sectors   ------> use for sector focus
+				# number_of_investments
+				# total_funding_usd (not formatted, just integers)
+			# relationships
+				# founders
+					# items
+				# headquarters
+					# items
+						# city
+						# region (shows state)
+				# funding_rounds
+					# items
+						# path -------> use to look up funding round details
+				# categories
+					# items
+						# name  ------> use for category
+				# primary_image
+					# items
+						# path ----> url to the image
+				# websites (linkedin twitter etc) ---> use for later
+					# items
+				# news  ------> use for later
+					# items

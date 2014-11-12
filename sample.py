@@ -126,15 +126,21 @@ class CompareVcs():
 
 	def __init__(self, vc1, vc2):
 		# check if same. How do you want to handle that?
-		# self.vc1 = VC(vc1)
-		# self.vc2 = VC(vc2)
-		pass
+		if vc1 == vc2:
+			return "Choose two different firms to compare."
+		self.vc1 = VC(vc1)
+		self.vc2 = VC(vc2)
+		
 	def compare_investments(self):
-		# i_1 = self.vc1.get_investments()
-		# i_2 = self.vc2.get_investments()
-		# compare
-		# Return a list of companies
-		pass
+		
+		i_1 = self.vc1.get_investments()
+		i_2 = self.vc2.get_investments()
+
+		
+		common_investments = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
+		
+		return "Investments in common: ", common_investments
+		
 
 class Company():
 	def __int__(self, company_path):
@@ -145,17 +151,20 @@ class Company():
 		# Return data
 		pass
 
+
 class VC():
 
 	def __init__(self, vc_path):
-		# if VC path is none give error
+		if vc_path is None:
+			print "No VC path received to instantiate VC instance."
 		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 		self.vc_path = vc_path
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
 
 	def get_data(self):
-		# Is data in cache?
+		print "Made it to get data"
+
 		cache = self.mc.get(self.vc_data_key)
 		if cache is not None:
 			return cache
@@ -167,7 +176,8 @@ class VC():
 		return data
 
 	def get_investments(self):
-		
+		print "Made it to get investments"
+
 		cache = self.mc.get(self.vc_investments_key)
 		if cache is not None:
 			return cache
@@ -176,6 +186,8 @@ class VC():
 
 		data = c.get_vc_portfolio(self.vc_path)
 		self.mc.set(self.vc_investments_key, data)
+		
+		return data
 
 	
 class Crunchbase():
@@ -195,7 +207,7 @@ class Crunchbase():
 		response = requests.get(self.URL_BASE + "organization/" + vc_path + target + "?user_key=" + self.API_KEY)
 
 		if response.status_code is not 200:
-			print "Failed lookup: %d" % vc_portfolio.status_code
+			print "Failed lookup: %d" % response.status_code
 			return None
 		return response.json()['data']
 

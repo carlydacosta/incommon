@@ -140,16 +140,29 @@ class CompareVcs():
 		common_investments = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
 		
 		return "Investments in common: ", common_investments
-		
 
-class Company():
-	def __int__(self, company_path):
-		# Copy everything VC. Make a crunchbase call in that class for company.
-		pass
+
+class PortfolioCompany():
+
+	def __init__(self, pc_path):
+		if pc_path is None:
+			print "No PC path received to instantiate PC instance."
+		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+		self.pc_path = pc_path
+		self.pc_data_key = "data-%s" % pc_path
+		
 	def get_data(self):
-		# Do same cache as VC
-		# Return data
-		pass
+		print "Made it to PC data"
+
+		cache = self.mc.get(self.pc_data_key)
+		if cache is not None:
+			return cache
+
+		c = Crunchbase()
+
+		data = c.get_pc_data(self.pc_path)
+		self.mc.set(self.pc_data_key, data)
+		return data
 
 
 class VC():
@@ -163,20 +176,20 @@ class VC():
 		self.vc_investments_key = "investments-%s" % vc_path
 
 	def get_data(self):
-		print "Made it to get data"
+		print "Made it to VC data"
 
 		cache = self.mc.get(self.vc_data_key)
 		if cache is not None:
-			return cache
+			return "cache: ", cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
 		self.mc.set(self.vc_data_key, data)
-		return data
+		return "crunchbase data: ", data
 
 	def get_investments(self):
-		print "Made it to get investments"
+		print "Made it to VC investments"
 
 		cache = self.mc.get(self.vc_investments_key)
 		if cache is not None:
@@ -202,6 +215,9 @@ class Crunchbase():
 	def get_vc_portfolio(self, vc_path):
 		return self._query(vc_path, "/investments")	
 
+	def get_pc_data(self, pc_path):
+		return self._query(pc_path, "")
+
 	def _query(self, vc_path, target=""):
 		print "Queried Crunchbase"
 		response = requests.get(self.URL_BASE + "organization/" + vc_path + target + "?user_key=" + self.API_KEY)
@@ -209,7 +225,7 @@ class Crunchbase():
 		if response.status_code is not 200:
 			print "Failed lookup: %d" % response.status_code
 			return None
-		return response.json()['data']
+		return response.json()[DATA]
 
 
 

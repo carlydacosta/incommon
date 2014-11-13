@@ -111,10 +111,10 @@ c = CompareVcs('sutter-hill-ventures', 'sequoia')
 
 companies = c.compare_investments()
 
-data = {}
+data = {company:data}
 #TODO - make this comparison part of the VC class? 
 for company in companies:
-	company_object = Company(company)
+	company_object = PortfolioCompany(company)
 	data[company] = company_object.get_data()
 
 # Now you have a dictionary of company -> data
@@ -124,45 +124,36 @@ for company in companies:
 
 class CompareVcs():
 
-	def __init__(self, vc1, vc2):
+	def __init__(self, vc1_path, vc2_path):
 		# check if same. How do you want to handle that?
-		if vc1 == vc2:
+		if vc1_path == vc2_path:
 			return "Choose two different firms to compare."
-		self.vc1 = VC(vc1)
-		self.vc2 = VC(vc2)
+		self.vc1 = VC(vc1_path)
+		self.vc2 = VC(vc2_path)
 		
 	def compare_investments(self):
 		
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
 
+		common_investments_list = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
+		print "Investments in common: ", common_investments_list
+
+		common_paths_list = (set(item['invested_in']['path'] for item in i_1[ITEMS]) & set(item['invested_in']['path'] for item in i_2[ITEMS]))
+		print "common paths: ", common_paths_list
+
+		pc_data_dict = {} # {pc path : pc data}
+
+		for pc_path in common_paths_list:
+			pc_path = pc_path.replace("organization/", "").encode("utf8")
+			print pc_path
+			pc_object = PortfolioCompany(pc_path)
+			pc_data_dict[pc_path] = pc_object.get_data()
+			
+		print "PC dictionary complete."
+
 		
-		common_investments = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
-		
-		return "Investments in common: ", common_investments
-
-
-class PortfolioCompany():
-
-	def __init__(self, pc_path):
-		if pc_path is None:
-			print "No PC path received to instantiate PC instance."
-		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
-		self.pc_path = pc_path
-		self.pc_data_key = "data-%s" % pc_path
-		
-	def get_data(self):
-		print "Made it to PC data"
-
-		cache = self.mc.get(self.pc_data_key)
-		if cache is not None:
-			return cache
-
-		c = Crunchbase()
-
-		data = c.get_pc_data(self.pc_path)
-		self.mc.set(self.pc_data_key, data)
-		return data
+		return common_investments_list
 
 
 class VC():
@@ -174,6 +165,7 @@ class VC():
 		self.vc_path = vc_path
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
+
 
 	def get_data(self):
 		print "Made it to VC data"
@@ -201,6 +193,31 @@ class VC():
 		self.mc.set(self.vc_investments_key, data)
 		
 		return data
+
+
+class PortfolioCompany():
+
+	def __init__(self, pc_path):
+		if pc_path is None:
+			print "No PC path received to instantiate PC instance."
+		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+		self.pc_path = pc_path
+		self.pc_data_key = "data-%s" % pc_path
+		
+	def get_data(self):
+		print "Made it to PC data"
+
+		cache = self.mc.get(self.pc_data_key)
+		if cache is not None:
+			return cache
+
+		c = Crunchbase()
+
+		data = c.get_pc_data(self.pc_path)
+		self.mc.set(self.pc_data_key, data)
+		return data
+
+
 
 	
 class Crunchbase():

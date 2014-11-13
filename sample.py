@@ -1,14 +1,4 @@
-import memcache, requests, os, model, seed, sample
-
-#import json, ast
-#from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
-#from datetime import datetime
-#from google.appengine.api import memcache
-
-#establish memcache connection
-mc = memcache.Client(['127.0.0.1:11211'], debug=0)
-
-#configuration
+import memcache, requests, os, model, seed, sample #, json, ast
 
 DATA="data"
 ITEMS="items"
@@ -19,90 +9,6 @@ HEADQUARTERS="headquarters"
 
 #f0e2f7c3fd87b6dc6bc38c5ec8e7baf7
 
-
-def check_for_vc(vc1_path):   # Need to add 2nd path
-	print "Recieved path: ", vc1_path
-	
-	if not mc.get(vc1_path):
-		print "Memcache result:",mc.get(vc1_path),". Checking database..."
-
-		if model.session.query(model.InvestmentCompany).filter_by(permalink=vc1_path).all() == None:
-			print "Database result: ",model.session.query(model.InvestmentCompany).filter_by(permalink=vc1_path).all(),". Making API request..."	 
-		
-			crunchbase = sample.Crunchbase()
-			vc_data = crunchbase.get_vc_data(vc1_path)
-			print "Recieved VC data", vc_data
-
-			mc.set(vc1_path, vc_data)
-			print "VC added data to memcache."
-			
-			seed.load_investment_company(vc_data)
-			print "VC added to database."
-	else:
-		mc.get(vc1_path)
-		print "Got VC from memcache."
-
-	# call common_investments()
-
-
-def common_investments(vc1_path):	# make for 2 paths
-
-	if not mc.get("vc_portfolio"):
-		print "Making API call..."
-
-		crunchbase = Crunchbase()
-
-		vc1_portfolio_list = crunchbase.get_vc_portfolio(vc1_path)
-		#vc2_portfolio_list = crunchbase.get_vc_portfolio(vc2_path)
-
-		mc.set("vc_portfolio", vc1_portfolio_list)  #how do I make keys unique?
-		print "Set in memcache"
-		#mc.set(vc2_path+"portfolio list", vc2_portfolio_list)
-
-	else:
-		vc_list = mc.get("vc_portfolio")
-		print "Got from memcache..."
-
-	for item in vc_list:
-		pc = item["invested_in"]["name"]
-		print "memcache result", pc
-
-	# set(vc1_portfolio_list["invested_in"]["name"] for item in vc1_portfolio_list)
-	# print "VC 1 Portfolio from crunchbase:", vc1_set
-	
-	# vc2_portfolios = set(vc2_portfolio_list["invested_in"]["name"] for item in vc2_portfolio_list)
-	# print "VC 2 Portfolio from crunchbase:", vc2_set
-
-	# common_investments_list = [item for item in set(vc1_set) & set(vc2_set)]  
-	# print "Found common investments"
-
-	# check_for_pc(common_investments_list)
-
-	# return common_investments_list	
-
-def check_for_pc(common_investments_list):
-	pass
-	#do what i did to check for vc company
-	print "Recieved common investments."
-	
-	if not mc.get(vc1_path):
-		print "Memcache result:",mc.get(vc1_path),". Checking database..."
-
-		if model.session.query(model.InvestmentCompany).filter_by(permalink=vc1_path).all() == None:
-			print "Database result: ",model.session.query(model.InvestmentCompany).filter_by(permalink=vc1_path).all(),". Making API request..."	 
-		
-			crunchbase = sample.Crunchbase()
-			vc_data = crunchbase.get_vc_data(vc1_path)
-			print "Recieved VC data", vc_data
-
-			mc.set(vc1_path, vc_data)
-			print "VC added data to memcache."
-			
-			seed.load_investment_company(vc_data)
-			print "VC added to database."
-	else:
-		mc.get(vc1_path)
-		print "Got VC from memcache."
 
 '''
 goal: 
@@ -125,14 +31,16 @@ for company in companies:
 class CompareVcs():
 
 	def __init__(self, vc1_path, vc2_path):
-		# check if same. How do you want to handle that?
 		if vc1_path == vc2_path:
-			return "Choose two different firms to compare."
+			raise Exception("Firms must be different to compare.")
 		self.vc1 = VC(vc1_path)
 		self.vc2 = VC(vc2_path)
 		
 	def compare_investments(self):
-		
+		# go ahead and get the data of the company and add it to memcache
+		self.vc1.get_data()
+		self.vc2.get_data()
+
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
 
@@ -156,15 +64,20 @@ class CompareVcs():
 		return common_investments_list
 
 
+
 class VC():
 
 	def __init__(self, vc_path):
 		if vc_path is None:
-			print "No VC path received to instantiate VC instance."
+			raise Exception("No VC path received to instantiate VC instance.")
 		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 		self.vc_path = vc_path
+		# self.all_vcs_key = "all_vc"
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
+
+	def get_vc_list(self):
+		pass
 
 
 	def get_data(self):
@@ -172,13 +85,13 @@ class VC():
 
 		cache = self.mc.get(self.vc_data_key)
 		if cache is not None:
-			return "cache: ", cache
+			return cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
 		self.mc.set(self.vc_data_key, data)
-		return "crunchbase data: ", data
+		return data 
 
 	def get_investments(self):
 		print "Made it to VC investments"
@@ -191,8 +104,10 @@ class VC():
 
 		data = c.get_vc_portfolio(self.vc_path)
 		self.mc.set(self.vc_investments_key, data)
+		#seed.load_investment_company(data)
 		
 		return data
+
 
 
 class PortfolioCompany():
@@ -219,13 +134,28 @@ class PortfolioCompany():
 
 
 
-	
 class Crunchbase():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
 		# this.API_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
+
+	def get_vc_list(self):
+		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)
+		number_of_pages = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY).json()[DATA]['paging']['number_of_pages']
+
+		for page in range(1, 2):
+			response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
+			
+		
+			if response.status_code is not 200:
+				print "Failed lookup: %d" % response.status_code
+				return None
+			#cache = #save to cache w/ key as vc_list_page #
+		# return response.json()[DATA]
+
+		
 	def get_vc_data(self, vc_path):
 		return self._query(vc_path, "")
 		
@@ -254,8 +184,10 @@ class Crunchbase():
 # 	return vc_partner_list
 
 def main():
-	#check_for_vc("in-q-tel")
-	common_investments("sutter-hill-ventures")
+	vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
+	vc.compare_investments()
+	# c = Crunchbase()
+	# c.get_vc_list()
 
 	
 

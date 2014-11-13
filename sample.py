@@ -1,31 +1,7 @@
-import memcache, requests, os, model, seed, sample, json, ast
+import memcache, requests, os
 
 DATA="data"
 ITEMS="items"
-PATH="path"
-PROPERTIES="properties"
-RELATIONSHIPS="relationships"
-HEADQUARTERS="headquarters"
-
-#f0e2f7c3fd87b6dc6bc38c5ec8e7baf7
-
-
-'''
-goal: 
-
-c = CompareVcs('sutter-hill-ventures', 'sequoia')
-
-companies = c.compare_investments()
-
-data = {company:data}
-#TODO - make this comparison part of the VC class? 
-for company in companies:
-	company_object = PortfolioCompany(company)
-	data[company] = company_object.get_data()
-
-# Now you have a dictionary of company -> data
-
-'''
 
 
 class CompareVcs():
@@ -131,7 +107,8 @@ class PortfolioCompany():
 
 
 def save_vc_list():
-
+	URL_BASE = "http://api.crunchbase.com/v/2/"
+	API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
 	mc = memcache.Client(['127.0.0.1:11211'], debug=0)	
 	c = Crunchbase()
 
@@ -149,7 +126,7 @@ def save_vc_list():
 
 		else:
 			print "Not in cache.  Making API call..."
-			response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
+			response = requests.get(URL_BASE + "organizations?organization_types=investor&user_key=" + API_KEY + "&page=" + str(page))
 			data = response.json()[DATA]
 		
 			if response.status_code is not 200:

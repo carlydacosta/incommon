@@ -129,6 +129,7 @@ class PortfolioCompany():
 		return data
 
 
+
 def save_vc_list():
 
 	mc = memcache.Client(['127.0.0.1:11211'], debug=0)	
@@ -157,6 +158,7 @@ def save_vc_list():
 			
 			print "Setting page " + str(page) + " in cache."
 			cache = mc.set(cache_key, data)
+
 
 
 class Crunchbase():

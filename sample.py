@@ -1,4 +1,4 @@
-import memcache, requests, os
+import memcache, requests, os, seed
 
 DATA="data"
 ITEMS="items"
@@ -26,17 +26,14 @@ class CompareVcs():
 		common_paths_list = (set(item['invested_in']['path'] for item in i_1[ITEMS]) & set(item['invested_in']['path'] for item in i_2[ITEMS]))
 		print "common paths: ", common_paths_list
 
-		pc_data_dict = {} # {pc path : pc data}
-
 		for pc_path in common_paths_list:
 			pc_path = pc_path.replace("organization/", "").encode("utf8")
 			print pc_path
 			pc_object = PortfolioCompany(pc_path)
-			pc_data_dict[pc_path] = pc_object.get_data()
+			pc_object.get_data()
 			
-		print "PC dictionary complete."
+		print "Common PC data added to cache."
 
-		
 		return common_investments_list
 
 
@@ -48,21 +45,25 @@ class VC():
 			raise Exception("No VC path received to instantiate VC instance.")
 		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 		self.vc_path = vc_path
-		# self.all_vcs_key = "all_vc"
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
 
 	def get_data(self):
 		print "Made it to VC data"
+		
+		print "at get_data - path: ", self.vc_path
 
 		cache = self.mc.get(self.vc_data_key)
+		print "Printing cache: ", cache
 		if cache is not None:
+			seed.load_investment_company(cache)
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
 		self.mc.set(self.vc_data_key, data)
+		seed.load_investment_company(data)
 		return data 
 
 	def get_investments(self):
@@ -76,8 +77,7 @@ class VC():
 
 		data = c.get_vc_portfolio(self.vc_path)
 		self.mc.set(self.vc_investments_key, data)
-		#seed.load_investment_company(data)
-		
+				
 		return data
 
 
@@ -96,12 +96,14 @@ class PortfolioCompany():
 
 		cache = self.mc.get(self.pc_data_key)
 		if cache is not None:
+			# seed.load_investment_company(cache)
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_pc_data(self.pc_path)
 		self.mc.set(self.pc_data_key, data)
+		# seed.load_investment_company(data)
 		return data
 
 
@@ -139,12 +141,12 @@ def save_vc_list():
 
 
 class Crunchbase():
+	
 	URL_BASE = "http://api.crunchbase.com/v/2/"
+	
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
 		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
-		# this.API_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
-
 
 	def get_vc_list(self):
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)
@@ -153,6 +155,7 @@ class Crunchbase():
 		return response.json()[DATA]
 		
 	def get_vc_data(self, vc_path):
+		print "at crunchbase vc_data - path:", vc_path
 		return self._query(vc_path, "")
 		
 	def get_vc_portfolio(self, vc_path):
@@ -182,9 +185,11 @@ class Crunchbase():
 def main():
 	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
 	# vc.compare_investments()
+	vc = VC('avalon-ventures')
+	vc.get_data()
 	# c = Crunchbase()
 	# c.get_vc_list()
-	save_vc_list()
+	#save_vc_list()
 
 	
 

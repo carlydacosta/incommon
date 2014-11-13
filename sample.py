@@ -1,4 +1,4 @@
-import memcache, requests, os, model, seed, sample #, json, ast
+import memcache, requests, os, model, seed, sample, json, ast
 
 DATA="data"
 ITEMS="items"
@@ -138,6 +138,7 @@ class Crunchbase():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
+		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 		# this.API_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 
@@ -145,14 +146,28 @@ class Crunchbase():
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)
 		number_of_pages = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY).json()[DATA]['paging']['number_of_pages']
 
-		for page in range(1, 2):
-			response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
+		for page in range(1, number_of_pages+1):
+			print page
+			cache_key = "vc_list_"+str(page)
+			cache = self.mc.get(cache_key)
 			
-		
-			if response.status_code is not 200:
-				print "Failed lookup: %d" % response.status_code
-				return None
-			#cache = #save to cache w/ key as vc_list_page #
+			if cache is not None:
+				print "Returned page " + str(page) + " from cache."
+
+			else:
+				print "Not in cache.  Making API call..."
+				response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
+				data = response.json()[DATA]
+			
+				if response.status_code is not 200:
+					print "Failed lookup: %d" % response.status_code
+					return None
+				
+				print "Setting page " + str(page) + " in cache."
+				cache = self.mc.set(cache_key, data)
+
+		return cache
+
 		# return response.json()[DATA]
 
 		
@@ -184,10 +199,10 @@ class Crunchbase():
 # 	return vc_partner_list
 
 def main():
-	vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
-	vc.compare_investments()
-	# c = Crunchbase()
-	# c.get_vc_list()
+	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
+	# vc.compare_investments()
+	c = Crunchbase()
+	c.get_vc_list()
 
 	
 

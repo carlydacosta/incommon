@@ -76,10 +76,6 @@ class VC():
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
 
-	def get_vc_list(self):
-		pass
-
-
 	def get_data(self):
 		print "Made it to VC data"
 
@@ -133,6 +129,35 @@ class PortfolioCompany():
 		return data
 
 
+def save_vc_list():
+
+	mc = memcache.Client(['127.0.0.1:11211'], debug=0)	
+	c = Crunchbase()
+
+	data = c.get_vc_list()
+
+	number_of_pages = data['paging']['number_of_pages']
+
+	for page in range(1, number_of_pages+1):
+		print page
+		cache_key = "vc_list_"+str(page)
+		cache = mc.get(cache_key)
+		
+		if cache is not None:
+			print "Returned page " + str(page) + " from cache."
+
+		else:
+			print "Not in cache.  Making API call..."
+			response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
+			data = response.json()[DATA]
+		
+			if response.status_code is not 200:
+				print "Failed lookup: %d" % response.status_code
+				return None
+			
+			print "Setting page " + str(page) + " in cache."
+			cache = mc.set(cache_key, data)
+
 
 class Crunchbase():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
@@ -144,32 +169,9 @@ class Crunchbase():
 
 	def get_vc_list(self):
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)
-		number_of_pages = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY).json()[DATA]['paging']['number_of_pages']
-
-		for page in range(1, number_of_pages+1):
-			print page
-			cache_key = "vc_list_"+str(page)
-			cache = self.mc.get(cache_key)
-			
-			if cache is not None:
-				print "Returned page " + str(page) + " from cache."
-
-			else:
-				print "Not in cache.  Making API call..."
-				response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY + "&page=" + str(page))
-				data = response.json()[DATA]
-			
-				if response.status_code is not 200:
-					print "Failed lookup: %d" % response.status_code
-					return None
-				
-				print "Setting page " + str(page) + " in cache."
-				cache = self.mc.set(cache_key, data)
-
-		return cache
-
-		# return response.json()[DATA]
-
+		print "Queried Crunchbase"
+		response = requests.get(self.URL_BASE + "organizations?organization_types=investor&user_key=" + self.API_KEY)
+		return response.json()[DATA]
 		
 	def get_vc_data(self, vc_path):
 		return self._query(vc_path, "")
@@ -201,8 +203,9 @@ class Crunchbase():
 def main():
 	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
 	# vc.compare_investments()
-	c = Crunchbase()
-	c.get_vc_list()
+	# c = Crunchbase()
+	# c.get_vc_list()
+	save_vc_list()
 
 	
 

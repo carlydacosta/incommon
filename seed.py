@@ -52,6 +52,52 @@ def load_investment_company(vc_data):
 
 	print "Investment Company added to the Database."
 
+def load_portfolio_company(pc_data):
+	# Query the Database for the uuid
+	uuid = model.session.query(PortfolioCompany).filter_by(uuid = pc_data["uuid"]).first()
+
+	# If the uuid is already in the Database, do nothing
+	if uuid:
+		print "Portfolio Company already in the Database."
+		return
+
+	# If the uuid is not in the Database, then assign the company data to variables	
+	uuid = pc_data["uuid"]
+	permalink = pc_data[PROPERTIES]["permalink"]
+	company_name = pc_data[PROPERTIES]["name"]
+	
+	if "headquarters" in pc_data[RELATIONSHIPS]:
+		city = pc_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["city"]
+		state = pc_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["region"]
+	
+	if "homepage_url" in pc_data[PROPERTIES]:
+		homepage_url = pc_data[PROPERTIES]["homepage_url"]
+		
+	if "founded_on" in pc_data[PROPERTIES]:
+		founded = datetime.strptime(pc_data[PROPERTIES]["founded_on"], '%Y-%m-%d')
+
+	total_funding = pc_data[PROPERTIES]["total_funding_usd"]
+	
+	if "short_description" in pc_data[PROPERTIES]:
+		description = pc_data[PROPERTIES]["short_description"]
+	
+	# Create an investment company in the DB
+	portfoliocompany = model.PortfolioCompany(
+		uuid=uuid,
+		permalink=permalink,
+		company_name=company_name,
+		city=city,
+		state=state,
+		homepage_url=homepage_url,
+		founded=founded,
+		total_funding=total_funding,
+		description=description)
+
+	# Add it to the session
+	model.session.add(portfoliocompany)
+	# Commit it to the session
+	model.session.commit()
+	print "Portfolio Company added to the Database."
 
 def load_iqt_vc_partners():
 	

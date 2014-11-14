@@ -56,14 +56,14 @@ class VC():
 		cache = self.mc.get(self.vc_data_key)
 		print "Printing cache: ", cache
 		if cache is not None:
-			seed.load_investment_company(cache)
+			seed.load_investment_company(cache) # put the data into the DB, too.
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
-		self.mc.set(self.vc_data_key, data)
-		seed.load_investment_company(data)
+		self.mc.set(self.vc_data_key, data) # put the data into cache.
+		seed.load_investment_company(data) # put the data into the DB, too.
 		return data 
 
 	def get_investments(self):
@@ -71,12 +71,14 @@ class VC():
 
 		cache = self.mc.get(self.vc_investments_key)
 		if cache is not None:
+			#seed.load_investment_details(data) # put the data into the DB, too.
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_portfolio(self.vc_path)
-		self.mc.set(self.vc_investments_key, data)
+		self.mc.set(self.vc_investments_key, data) # put the data into cache.
+		#seed.load_investment_details(data) # put the data into the DB, too.
 				
 		return data
 
@@ -93,17 +95,18 @@ class PortfolioCompany():
 		
 	def get_data(self):
 		print "Made it to PC data"
+		print "path used: ", self.pc_path
 
 		cache = self.mc.get(self.pc_data_key)
 		if cache is not None:
-			# seed.load_investment_company(cache)
+			seed.load_portfolio_company(cache) # put the data into the DB, too.
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_pc_data(self.pc_path)
-		self.mc.set(self.pc_data_key, data)
-		# seed.load_investment_company(data)
+		self.mc.set(self.pc_data_key, data) # put the data into cache.
+		seed.load_portfolio_company(data) # put the data into the DB, too.
 		return data
 
 
@@ -162,6 +165,7 @@ class Crunchbase():
 		return self._query(vc_path, "/investments")	
 
 	def get_pc_data(self, pc_path):
+		print "at crunchbase pc_data - path:", pc_path
 		return self._query(pc_path, "")
 
 	def _query(self, vc_path, target=""):
@@ -185,8 +189,10 @@ class Crunchbase():
 def main():
 	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
 	# vc.compare_investments()
-	vc = VC('avalon-ventures')
-	vc.get_data()
+	# vc = VC('avalon-ventures')
+	# vc.get_data()
+	# pc = PortfolioCompany('memsql')
+	# pc.get_data()
 	# c = Crunchbase()
 	# c.get_vc_list()
 	#save_vc_list()

@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Compare VCs</title>
+    <link href='http://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <h1>VC Comparison App</h1>
+
+
+
+    <div class="forms">
+
+        <div class="form-container">
+            <h2>Please log in.</h2>
+            <h3 class="warning"></h3>
+
+            <form id="log-in-form" action="/login" method='POST'>
+                <div>Email<input type="text" class="input-text" name="user-email"></div>
+                <div>Password<input type="text" class="input-text" name="user-password"></div>
+                <button id="log-in-button" type="submit">Log In</button>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2>New user? Sign up here.</h2>
+
+            <form id="sign-up-form" action="/new-user" method='POST'>
+                <div>First Name<input type="text" class="input-text" name="first-name"></div>
+                <div>Last Name<input type="text" class="input-text" name="last-name"></div>
+                <div>Email<input type="text" class="input-text" name="new-user-email"></div>
+                <div>Password<input type="text" class="input-text" name="new-user-password"></div>
+                
+                
+                <button id="sign-up-button" type="submit">Sign Up</button>
+            </form>
+        </div>
+
+    </div>

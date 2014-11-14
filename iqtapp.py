@@ -29,7 +29,7 @@ def process_login():
 	user = dbsession.query(User).filter_by(password=password).filter_by(email=user_email).first()
 	# if user exists, add them to the flask session by userid
 	print "after query", user
-	session.clear()
+	# session.clear()
 	# print session["user"]
 	print session
 	if user:
@@ -48,7 +48,7 @@ def process_login():
 
 @app.route('/new-user', methods=['POST'])  # route here if click signup button on main page
 def process_new_user():
-	session.clear()
+	# session.clear()
 	
 	first_name = request.form.get('first-name')
 	last_name = request.form.get('last-name')

@@ -1,5 +1,5 @@
-import model
-from model import InvestmentCompany, PortfolioCompany
+import model, sample
+from model import InvestmentCompany, PortfolioCompany, VCList
 from datetime import datetime
 
 DATA="data"
@@ -52,6 +52,7 @@ def load_investment_company(vc_data):
 
 	print "Investment Company added to the Database."
 
+
 def load_portfolio_company(pc_data):
 	# Query the Database for the uuid
 	uuid = model.session.query(PortfolioCompany).filter_by(uuid = pc_data["uuid"]).first()
@@ -69,17 +70,28 @@ def load_portfolio_company(pc_data):
 	if "headquarters" in pc_data[RELATIONSHIPS]:
 		city = pc_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["city"]
 		state = pc_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["region"]
+	else:
+		city = None
+		state = None
+
 	
 	if "homepage_url" in pc_data[PROPERTIES]:
 		homepage_url = pc_data[PROPERTIES]["homepage_url"]
+
+	else:
+		homepage_url = None
 		
 	if "founded_on" in pc_data[PROPERTIES]:
 		founded = datetime.strptime(pc_data[PROPERTIES]["founded_on"], '%Y-%m-%d')
+	else:
+		founded = None
 
 	total_funding = pc_data[PROPERTIES]["total_funding_usd"]
 	
 	if "short_description" in pc_data[PROPERTIES]:
 		description = pc_data[PROPERTIES]["short_description"]
+	else:
+		description = None
 	
 	# Create an investment company in the DB
 	portfoliocompany = model.PortfolioCompany(
@@ -98,6 +110,41 @@ def load_portfolio_company(pc_data):
 	# Commit it to the session
 	model.session.commit()
 	print "Portfolio Company added to the Database."
+
+
+# This seed function relies on having memcache data.
+def load_vc_list():
+
+	mc = sample.memcache.Client(['127.0.0.1:11211'], debug=0)
+
+	for page in range(1, 19):
+		print "Page: ", page
+		print "Getting info from memcache..."
+		# get info from memcache by page
+		vc_page = mc.get("vc_list_"+str(page))
+
+		print "Iterating through VCs..."
+		# each page has list of vc
+		for vc in vc_page["items"]:
+			# Query the Database for the name
+			name = model.session.query(VCList).filter_by(name = vc["name"]).first()
+
+			# If the name is already in the Database, do nothing
+			if name:
+				print "VC already in the Database."
+
+			# If the name is not in the Database, then enter it	
+			else:
+				vc = model.VCList(
+					name = vc["name"],
+					permalink = vc["path"])
+				print "Added VC to database."
+				# Add it to the session
+				model.session.add(vc)
+	
+	# Commit it to the session
+	model.session.commit()
+	print "VCs added to the Database."
 
 def load_iqt_vc_partners():
 	
@@ -118,7 +165,7 @@ def load_iqt_vc_partners():
 
 
 def main():
-	pass
+	load_vc_list()
 
 	
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from flask import Flask, request, session, redirect, render_template, flash
-from model import User, PastQueries, session as dbsession
+from model import User, PastQueries, VCList, session as dbsession
 import os, requests
 import sample
 
@@ -58,7 +58,9 @@ def process_new_user():
 		first_name = first_name,
 		last_name = last_name,
 		email = user_email,
-		password = password)
+		password=password
+		)
+	# user.hash_password(password)
 	
 	if dbsession.query(User).filter_by(email = user_email).first():
 		
@@ -80,20 +82,21 @@ def log_out():
 
 @app.route("/index")  # how do I send this to javascript?
 def index():
-
-	vc_list = [] # list of vc names is here
-
+	#query the database for list of vc objects
+	vcs = dbsession.query(VCList).limit(30)
+		
 	return render_template("index.html",
-							vc_list=vc_list)  # show 2 dropdown lists of vcs and 'find common investments' button
+							vc_list=vcs)  # show 2 dropdown lists of vcs and 'find common investments' button
 
 
 @app.route("/common_investments", methods=['GET'])  # route here when the 'find common investments' button is selected
 def show_common_investments():
 	
 	# call the functions that return the common investments list
+
 	# return the results to javascript
-	return results
-		
+	#return results
+	pass	
 
 
 if __name__ == "__main__":

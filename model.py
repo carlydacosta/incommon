@@ -1,3 +1,4 @@
+# from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
@@ -38,7 +39,7 @@ class IqtPartner(Base):
 
 
 class User(Base):
-    __tablename__= "users"
+    __tablename__= "user"
 
     id = Column(Integer, primary_key = True)
     first_name = Column(String(120), nullable=True)
@@ -46,15 +47,23 @@ class User(Base):
     email = Column(String(100), nullable = True)
     password = Column(String(100), nullable=True)
 
+    pastqueries = relationship("PastQueries")
+
+    # def hash_password(self, password):
+    #     password_hash = pwd_context.encrypt(password)
+
+    # def verify_password(self, password):
+    #     return pwd_context.verify(password, password_hash)
+
    
 
 class PastQueries(Base):
-    __tablename__= "pastqueries"
+    __tablename__= "pastqueries"  # store as a json object
 
     id = Column(Integer, primary_key = True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     # column for queries limited by number or time?  How to store - as JSON?
-    pass
+    user = relationship("User")
 
 
 
@@ -105,6 +114,17 @@ class PortfolioCompany(Base):
     description = Column(Text, nullable=True)
     
 
+class VCList(Base):
+    __tablename__ = "vc"
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(120), nullable=True)
+    permalink = Column(String(120), nullable=False)
+
+
+def create_tables():
+
+    Base.metadata.create_all(engine)
 
 
 

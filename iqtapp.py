@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, render_template, flash
+from flask import Flask, request, session, redirect, json, render_template, flash, jsonify
 from model import User, PastQueries, VCList, session as dbsession
 import os, requests
 import sample
@@ -37,7 +37,7 @@ def process_login():
 			pass
 		else:
 			session["user"] = user.email
-		return redirect("/index") 
+		return redirect("/vc-list") 
 	# if user is not in the db, ask them to sign up
 	else:
 		print "at else"
@@ -71,7 +71,7 @@ def process_new_user():
 		dbsession.add(user)
     	dbsession.commit()
     	session["user"] = user.email
-    	return redirect("/index")  # note i can send the return /index to javascript vs redirect it
+    	return redirect("/vc-list")  # note i can send the return /index to javascript vs redirect it
 
 @app.route("/log-out", methods=['POST'])
 def log_out():
@@ -80,23 +80,39 @@ def log_out():
     return "/"  # if I just return this, then I can use it in javascript.  Versus return redirect ('/') would just be used internal to flask and send me
 
 
-@app.route("/index")  # how do I send this to javascript?
+@app.route("/vc-list")  # how do I send this to javascript?
 def index():
 	#query the database for list of vc objects
 	vcs = dbsession.query(VCList).limit(30)
-		
-	return render_template("index.html",
-							vc_list=vcs)  # show 2 dropdown lists of vcs and 'find common investments' button
+	
+	return render_template("vc_list.html",
+					 vc_list=vcs)  # show 2 dropdown lists of vcs and 'find common investments' button
 
 
 @app.route("/common_investments", methods=['GET'])  # route here when the 'find common investments' button is selected
 def show_common_investments():
-	
-	# call the functions that return the common investments list
+	#get company names from form
+	vc1 = request.args.get("vc1-list")
+	vc2 = request.args.get("vc2-list")
+	print "printing vc1 and 2 #################: ", vc1, vc2
+	#query database for path
+	vc1_object = dbsession.query(VCList).filter_by(name = vc1).first()
+	print vc1_object
+	vc1_path = vc1_object.permalink.encode("utf8")
+	print vc1_path
 
+	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
+	vc2_path = vc2_object.permalink.encode("utf8")
+	print vc2_object, vc2_path
+	#use path to call the functions that return the common investments list
+	vc = sample.CompareVcs(vc1_path, vc2_path)
+	common_investments_set = vc.compare_investments()
+
+	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
 	# return the results to javascript
-	#return results
-	pass	
+	return render_template("vc_list.html",
+						common_investments_set=common_investments_set)
+		
 
 
 if __name__ == "__main__":

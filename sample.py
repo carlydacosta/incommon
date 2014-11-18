@@ -20,8 +20,8 @@ class CompareVcs():
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
 
-		common_investments_list = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
-		print "Investments in common: ", common_investments_list
+		common_investments_set = (set(item['invested_in']['name'] for item in i_1[ITEMS]) & set(item['invested_in']['name'] for item in i_2[ITEMS]))
+		print "Investments in common: ", common_investments_set
 
 		common_paths_list = (set(item['invested_in']['path'] for item in i_1[ITEMS]) & set(item['invested_in']['path'] for item in i_2[ITEMS]))
 		print "common paths: ", common_paths_list
@@ -34,7 +34,7 @@ class CompareVcs():
 			
 		print "Common PC data added to cache."
 
-		return common_investments_list
+		return common_investments_set
 
 
 
@@ -54,8 +54,8 @@ class VC():
 		print "at get_data - path: ", self.vc_path
 
 		cache = self.mc.get(self.vc_data_key)
-		print "Printing cache: ", cache
 		if cache is not None:
+			print "Data was in cache."
 			seed.load_investment_company(cache) # put the data into the DB, too.
 			return cache
 
@@ -70,7 +70,9 @@ class VC():
 		print "Made it to VC investments"
 
 		cache = self.mc.get(self.vc_investments_key)
+
 		if cache is not None:
+			print "Investments were in cache."
 			#seed.load_investment_details(data) # put the data into the DB, too.
 			return cache
 
@@ -179,13 +181,6 @@ class Crunchbase():
 
 
 
-# def iqt_vc_partners_list():
-	
-# 	f = open("iqt_partners.csv")
-# 	vc_partner_list = f.strip().split('/r')
-
-# 	return vc_partner_list
-
 def main():
 	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
 	# vc.compare_investments()
@@ -195,7 +190,8 @@ def main():
 	# pc.get_data()
 	# c = Crunchbase()
 	# c.get_vc_list()
-	#save_vc_list()
+	# save_vc_list()
+	pass
 
 	
 

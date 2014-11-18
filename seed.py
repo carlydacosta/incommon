@@ -112,13 +112,13 @@ def load_portfolio_company(pc_data):
 	print "Portfolio Company added to the Database."
 
 
-# This seed function relies on having memcache data.
 def load_vc_list():
-
+# This seed function takes the data from memcache.  The function save_vc_list in the sample.py file gets the list from Crunchbase.
+# There is an easier way to do this, but for now this works...
 	mc = sample.memcache.Client(['127.0.0.1:11211'], debug=0)
 
 	for page in range(1, 19):
-		print "Page: ", page
+		print "#####################################  Page: ", page
 		print "Getting info from memcache..."
 		# get info from memcache by page
 		vc_page = mc.get("vc_list_"+str(page))
@@ -135,9 +135,11 @@ def load_vc_list():
 
 			# If the name is not in the Database, then enter it	
 			else:
+				permalink = vc["path"].split("/")
+
 				vc = model.VCList(
 					name = vc["name"],
-					permalink = vc["path"])
+					permalink = permalink[1])
 				print "Added VC to database."
 				# Add it to the session
 				model.session.add(vc)
@@ -165,7 +167,8 @@ def load_iqt_vc_partners():
 
 
 def main():
-	load_vc_list()
+	# load_vc_list()
+	pass
 
 	
 if __name__ == "__main__":

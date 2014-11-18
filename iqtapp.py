@@ -80,13 +80,13 @@ def log_out():
     return "/"  # if I just return this, then I can use it in javascript.  Versus return redirect ('/') would just be used internal to flask and send me
 
 
-@app.route("/vc-list")  # how do I send this to javascript?
+@app.route("/vc-list")
 def index():
 	#query the database for list of vc objects
 	vcs = dbsession.query(VCList).limit(30)
 	
 	return render_template("vc_list.html",
-					 vc_list=vcs)  # show 2 dropdown lists of vcs and 'find common investments' button
+					 vc_list=vcs)
 
 
 @app.route("/common_investments", methods=['GET'])  # route here when the 'find common investments' button is selected
@@ -94,25 +94,37 @@ def show_common_investments():
 	#get company names from form
 	vc1 = request.args.get("vc1-list")
 	vc2 = request.args.get("vc2-list")
-	print "printing vc1 and 2 #################: ", vc1, vc2
+	# print "printing vc1 and 2 #################: ", vc1, vc2
 	#query database for path
 	vc1_object = dbsession.query(VCList).filter_by(name = vc1).first()
-	print vc1_object
+	# print vc1_object
 	vc1_path = vc1_object.permalink.encode("utf8")
-	print vc1_path
+	# print vc1_path
 
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
-	print vc2_object, vc2_path
 	#use path to call the functions that return the common investments list
 	vc = sample.CompareVcs(vc1_path, vc2_path)
 	common_investments_set = vc.compare_investments()
 
 	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
-	# return the results to javascript
+	
 	return render_template("vc_list.html",
 						common_investments_set=common_investments_set)
-		
+
+@app.route("/type_ahead")
+def get_type_ahead_list():
+	#  JOEL SAMPLE q = request.args.get('q')  # partial term to search on, ie "oel"
+	#open file for writing
+	
+	# vc_objects = dbsession.query(VCList).filter(VCList.name.like('%' + q + '%'))
+	vc_objects = dbsession.query(VCList)
+	vc_dict = {"name" : [vc.name for vc in vc_objects]}
+	vc_json = json.dumps(vc_dict, f)
+
+	print vc_json	
+
+	return vc_json
 
 
 if __name__ == "__main__":

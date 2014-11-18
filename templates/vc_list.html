@@ -24,12 +24,52 @@
 	 	</form>
 
 
+
+
 	 	<div>
 	 		{% for pc in common_investments_set %}
 	 			<li>{{pc}}</li>
 	 		{% endfor %}
 	 	</div>
 
+
+		<div class="container">
+			<p class="example-description">Start Typing The VC Name: </p>
+			<input id="vc1" class="typeahead" type="text" placeholder="Input a VC name">
+			<input id="vc2" class="typeahead" type="text" placeholder="Input a VC name">
+			<button id="type-ahead-button" type="submit">Find Common Investments</button>
+		</div>
+
+  <!-- Load jQuery and the typeahead JS files -->
+  <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  <script src="../static/typeahead.min.js"></script>
+
+  <script>
+    $("#type-ahead-button").click(function(evt){
+    	alert("hi")
+    	$.get(
+    		"/type_ahead",
+    		function(result){
+    			console.log(result);
+    		});
+    });
+
+    // Waiting for the DOM ready...
+    $(function(){
+
+      // applied typeahead to the text input box
+      $('#my-input').typeahead({
+        name: 'countries',
+
+        // data source
+        prefetch: 'data/countries.json',
+        // JOEL DEMO SOME TNINGS WORKS LIKE THIS url_to_hit: '/type_ahead?q=',
+        // max item numbers list in the dropdown
+        limit: 10
+      });
+
+    });
+  </script>
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
   <!-- DO JAVASCRIPT LATER

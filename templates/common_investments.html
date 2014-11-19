@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset="UTF-8">
+		<title>InCommon</title>
+	</head>
+	
+	<body>
+		<div id="common-investments-list">
+			{% for company in common_investments_set %}
+			<li> {{company}} </li>
+			{% endfor %}
+		</div>
+
+	</body>
+</html>

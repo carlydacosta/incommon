@@ -3,22 +3,22 @@
 	
 	<head>
 		<meta charset="UTF-8">
-		<title>In-Q-Tel</title>
+		<title>InCommon</title>
 	</head>
 	
 	<body>
-	 	<h1>Investment Mapper</h1>
+	 	<h1 id="load-here">Investment Mapper</h1>
 		 	
-		<form>
-			<div id="prefetch">
-				<input class="typeahead" type="text" placeholder="VC">
+		<form action="/common-investments">
+			<div>
+				<input class="typeahead" name="vc1" type="text" placeholder="VC">
 			</div>
-			<div id="prefetch">
-				<input class="typeahead" type="text" placeholder="VC">
+			<div>
+				<input class="typeahead" name="vc2" type="text" placeholder="VC">
 			</div>
 			<button id="submit-vc-button">Find Common Investments</button>
 		</form>	
-	  
+
 		<!-- Load jQuery and the typeahead JS files -->
 		<script src="/static/jquery.js"></script>
 		<script src="/static/typeahead.bundle.js"></script>
@@ -34,7 +34,7 @@
 				url: '/static/vc_list.json',
 				// the json file contains an array of strings, but the Bloodhound suggestion engine expects JavaScript objects so this converts all of those strings
 				filter: function(list) {
-	  			return $.map(list, function(country) { return { name: country }; });
+	  			return $.map(list, function(vc) { return { name: vc }; });
 				}
 			}
 		});
@@ -44,7 +44,7 @@
 	 
 		// passing in `null` for the `options` arguments will result in the default
 		// options being used
-		$('#prefetch .typeahead').typeahead(null, {
+		$('.typeahead').typeahead(null, {
 		  name: 'vcs',
 		  displayKey: 'name',
 		  // `ttAdapter` wraps the suggestion engine in an adapter that
@@ -52,9 +52,16 @@
 		  source: vcs.ttAdapter()
 		});
 
-		$('#submit-vc-button').click(function(evt){
-			alert("hi");
-		});
+		// $('#submit-vc-button').click(function(evt){
+		// 	alert("hi");
+		// 	$('#common-investments-list').load('/common-investments')
+		// 	$.get(
+		// 		"/common-investments",
+		// 		function(results){
+		// 			console.log(results),
+		// 			$('#common-investments-list').html("List goes here.")
+		// 		});
+		// });
 		</script>
 
 

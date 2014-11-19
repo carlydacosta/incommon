@@ -14,10 +14,7 @@ class CompareVcs():
 		
 	def compare_investments(self): 
 
-		# go ahead and get the data of the company and add it to memcache
-		self.vc1.get_data()
-		self.vc2.get_data()
-
+		print "at compare investments"
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
 
@@ -38,7 +35,10 @@ class CompareVcs():
 
 		return common_investments_set
 
+	def get_data(self):
 
+		self.vc1.get_data()
+		self.vc2.get_data()
 
 class VC():
 
@@ -51,7 +51,7 @@ class VC():
 		self.vc_investments_key = "investments-%s" % vc_path
 
 	def get_data(self):
-		print "Made it to VC data"
+		print "Made it to get VC data"
 		
 		print "at get_data - path: ", self.vc_path
 
@@ -69,7 +69,7 @@ class VC():
 		return data 
 
 	def get_investments(self):
-		print "Made it to VC investments"
+		print "Made it to get VC investments"
 
 		cache = self.mc.get(self.vc_investments_key)
 

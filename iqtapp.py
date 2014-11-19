@@ -1,6 +1,6 @@
-from flask import Flask, request, session, redirect, json, render_template, flash, jsonify
-from model import User, PastQueries, VCList, session as dbsession
-import os, requests
+from flask import Flask, request, session, redirect, json, render_template
+from model import User, VCList, session as dbsession
+import os
 import sample
 
 
@@ -15,34 +15,31 @@ app.secret_key = APP_SECRET_KEY
 @app.route('/', methods=['GET'])
 def main_page():
 	
-	# session['user'] = {}
-	return render_template("main.html")  # show name/logo of app, log in fields & button, sign up fields & buttom
+	return render_template("main.html")
 
 
-@app.route('/login', methods=['POST'])	# route here when click login button on main page
+@app.route('/login', methods=['POST'])
 def process_login():
-	print "at process_login"
+	
 	user_email = request.form.get('user-email')
 	password = request.form.get('user-password')
-	# check if user email and password are in db
+	
 	user = dbsession.query(User).filter_by(password=password).filter_by(email=user_email).first()
-	# if user exists, add them to the flask session by userid
-	print "after query", user
 	# session.clear()
 	# print session["user"]
 	print session
+	
 	if user:
 		session["user"] = user.email
 		return redirect("/vc-list") 
-	# if user is not in the db, ask them to sign up
+	
 	else:
 		print "at else"
-		
-		return redirect("/")  # note i can send the return /index to javascript vs redirect it
+		return redirect("/")
 
 
 
-@app.route('/new-user', methods=['POST'])  # route here if click signup button on main page
+@app.route('/new-user', methods=['POST'])
 def process_new_user():
 	# session.clear()
 	
@@ -75,27 +72,28 @@ def index():
 	return render_template("vc_list.html")
 
 
-@app.route("/common_investments", methods=['GET'])  # route here when the 'find common investments' button is selected
+@app.route("/common-investments", methods=['GET'])  # route here when the 'find common investments' button is selected
 def show_common_investments():
 	#get company names from form
-	vc1 = request.args.get("vc1-list")
-	vc2 = request.args.get("vc2-list")
-	# print "printing vc1 and 2 #################: ", vc1, vc2
+	vc1 = request.args.get("vc1")
+	vc2 = request.args.get("vc2")
+	print "printing vc1 and 2 #################: ", vc1, vc2
 	#query database for path
 	vc1_object = dbsession.query(VCList).filter_by(name = vc1).first()
-	# print vc1_object
+	print vc1_object
 	vc1_path = vc1_object.permalink.encode("utf8")
-	# print vc1_path
+	print vc1_path
 
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
 	#use path to call the functions that return the common investments list
 	vc = sample.CompareVcs(vc1_path, vc2_path)
-	common_investments_set = vc.compare_investments()
+	common_investments_set = list(vc.compare_investments())
 
 	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
 	
-	return render_template("vc_list.html",
+	# return json.dumps(list(common_investments_set))
+	return render_template("common_investments.html",
 						common_investments_set=common_investments_set)
 
 @app.route("/log-out", methods=['POST'])

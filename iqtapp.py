@@ -8,16 +8,15 @@ import sample
 APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 
-
 app = Flask(__name__)
 app.secret_key = APP_SECRET_KEY
+
 
 @app.route('/', methods=['GET'])
 def main_page():
 	
 	# session['user'] = {}
 	return render_template("main.html")  # show name/logo of app, log in fields & button, sign up fields & buttom
-
 
 
 @app.route('/login', methods=['POST'])	# route here when click login button on main page
@@ -33,10 +32,7 @@ def process_login():
 	# print session["user"]
 	print session
 	if user:
-		if user.email in session["user"]:
-			pass
-		else:
-			session["user"] = user.email
+		session["user"] = user.email
 		return redirect("/vc-list") 
 	# if user is not in the db, ask them to sign up
 	else:
@@ -65,7 +61,6 @@ def process_new_user():
 	if dbsession.query(User).filter_by(email = user_email).first():
 		
 		return redirect('/')  # note i can send the return /index to javascript vs redirect it
-
 	
 	else:
 		dbsession.add(user)
@@ -73,20 +68,11 @@ def process_new_user():
     	session["user"] = user.email
     	return redirect("/vc-list")  # note i can send the return /index to javascript vs redirect it
 
-@app.route("/log-out", methods=['POST'])
-def log_out():
-
-    session["user"] = {}
-    return "/"  # if I just return this, then I can use it in javascript.  Versus return redirect ('/') would just be used internal to flask and send me
-
 
 @app.route("/vc-list")
 def index():
-	#query the database for list of vc objects
-	vcs = dbsession.query(VCList).limit(30)
-	
-	return render_template("vc_list.html",
-					 vc_list=vcs)
+		
+	return render_template("vc_list.html")
 
 
 @app.route("/common_investments", methods=['GET'])  # route here when the 'find common investments' button is selected
@@ -112,19 +98,11 @@ def show_common_investments():
 	return render_template("vc_list.html",
 						common_investments_set=common_investments_set)
 
-@app.route("/type_ahead")
-def get_type_ahead_list():
-	#  JOEL SAMPLE q = request.args.get('q')  # partial term to search on, ie "oel"
-	#open file for writing
-	
-	# vc_objects = dbsession.query(VCList).filter(VCList.name.like('%' + q + '%'))
-	vc_objects = dbsession.query(VCList)
-	vc_dict = {"name" : [vc.name for vc in vc_objects]}
-	vc_json = json.dumps(vc_dict, f)
+@app.route("/log-out", methods=['POST'])
+def log_out():
 
-	print vc_json	
-
-	return vc_json
+    session["user"] = {}
+    return "/"  # if I just return this, then I can use it in javascript.  Versus return redirect ('/') would just be used internal to flask and send me
 
 
 if __name__ == "__main__":

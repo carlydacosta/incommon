@@ -26,16 +26,21 @@ Base.query = session.query_property()
 # One2M: An investment company will have many partners.
 
 #### IQT INFO TO INCORPORATE
-    # equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
-    # equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
-    # ownership_percent = Column(Integer, nullable=True)  ### IQT information
 
-class IqtPartner(Base):
+    
+
+class IqtDetail(Base):
     __tablename__ = "iqtpartner"
-    id = Column(Integer, primary_key = True)
-    name = Column(String(120), nullable=False)
-    permalink = Column(String(120), nullable=False)
 
+    id = Column(Integer, primary_key = True)
+    investment_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
+    portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
+
+    partner_first_name = Column(String(120), nullable=False)
+    partner_last_name = Column(String(120), nullable=False)
+    equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
+    equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
+    ownership_percent = Column(Integer, nullable=True)  ### IQT information
 
 
 class User(Base):

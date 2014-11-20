@@ -84,18 +84,22 @@ def show_common_investments():
 	vc1_path = vc1_object.permalink.encode("utf8")
 	print vc1_path
 
+
+
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
 	#use path to call the functions that return the common investments list
 	vc = sample.CompareVcs(vc1_path, vc2_path)
 	common_investments_set = list(vc.compare_investments())
-
+	
+	# if vc1 or vc2 == "In-Q-Tel"
+		# query db for inqtel details filterby portfolio company name
+	
 	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
 	
-	r = json.dumps(list(common_investments_set))
-	return Response(r, mimetype="text/json")
-	# return render_template("common_investments.html",
-	# 					common_investments_set=common_investments_set)
+	html = render_template("common_investments.html",
+						common_investments_set=common_investments_set)
+	return Response(html, mimetype="text/html")
 
 @app.route("/log-out", methods=['POST'])
 def log_out():

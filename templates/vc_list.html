@@ -7,17 +7,41 @@
 	</head>
 	
 	<body>
-	 	<h1 id="load-here">Investment Mapper</h1>
+	 	<div class="header">
+	 	
+	 		<h1 id="header">Investment Mapper</h1>
+	 		<button class="nav" id="home">Home</button>
+	        <button class="nav" id="log-out">Log out</button>
 		 	
-		<form action="/common-investments">
-			<div>
-				<input class="typeahead" name="vc1" type="text" placeholder="VC">
-			</div>
-			<div>
-				<input class="typeahead" name="vc2" type="text" placeholder="VC">
-			</div>
-			<button id="submit-vc-button">Find Common Investments</button>
-		</form>	
+		</div>
+		
+		<div id="search-form-div">
+			<form id="search-form">
+				<!-- action="/common-investments" -->
+				
+				<div>
+					<input class="typeahead" name="vc1" type="text" placeholder="VC">
+				</div>
+				
+				<div>
+					<input class="typeahead" name="vc2" type="text" placeholder="VC">
+				</div>
+				
+				<button id="common-investments-button" type="button">Find Common Investments</button>
+			
+			</form>
+		</div>
+		
+		<div id="results-div">
+			<h3 id="results-heading"></h3>
+			<div id="results-list"></div>
+		</div>
+
+
+		
+		<!-- javascript so results div is replaced by list of companies, vc info when selected, company info when selected -->
+
+		
 
 		<!-- Load jQuery and the typeahead JS files -->
 		<script src="/static/jquery.js"></script>
@@ -52,16 +76,48 @@
 		  source: vcs.ttAdapter()
 		});
 
-		// $('#submit-vc-button').click(function(evt){
-		// 	alert("hi");
-		// 	$('#common-investments-list').load('/common-investments')
-		// 	$.get(
-		// 		"/common-investments",
-		// 		function(results){
-		// 			console.log(results),
-		// 			$('#common-investments-list').html("List goes here.")
-		// 		});
-		// });
+		//event handler for home button.  when home button is clicked, send request to the /vc-list
+		$('#home').click(function(evt) {
+			evt.preventDefault();
+			alert("hi");
+			$("#results-div").hide();
+            $("#search-form-div").show();
+        });
+
+		//event handler for log-out button.  when log-out button is clicked, send request to the /log-out url
+		$('#log-out').click(function(evt) {
+    		$.post(
+        		"/log-out",
+        		function(result) {
+		            // this request clears the user's session
+		            console.log(result);
+		            window.location = result;
+        		}
+        	);
+		});
+		//event handler for the common investments button
+		$('#common-investments-button').click(function(evt){
+			evt.preventDefault();
+			var str = $("#search-form").serialize();
+			console.log(str);
+			// $('.results-list').load("../templates/common_investments.html");
+
+			$.get("/ajax/common-investments", str,
+				function(result){
+					for (var i = 0; i < result.length; i++) {
+						console.log(result[i]);
+						$("#results-div").append('<div class="company" data-companyname="' + result[i] + '">' + result[i] + "</div>");
+					};
+					$("#search-form-div").hide();
+					$("#results-heading").html("Common Investments")
+					$('.company').click(function(evt){
+						console.log("clicked on company");
+						var company = this.innerHTML;
+					});
+				});
+		});
+
+		
 		</script>
 
 

@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, json, render_template
+from flask import Flask, request, session, redirect, json, render_template, Response
 from model import User, VCList, session as dbsession
 import os
 import sample
@@ -72,7 +72,7 @@ def index():
 	return render_template("vc_list.html")
 
 
-@app.route("/common-investments", methods=['GET'])  # route here when the 'find common investments' button is selected
+@app.route("/ajax/common-investments", methods=['GET'])  # route here when the 'find common investments' button is selected
 def show_common_investments():
 	#get company names from form
 	vc1 = request.args.get("vc1")
@@ -92,15 +92,16 @@ def show_common_investments():
 
 	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
 	
-	# return json.dumps(list(common_investments_set))
-	return render_template("common_investments.html",
-						common_investments_set=common_investments_set)
+	r = json.dumps(list(common_investments_set))
+	return Response(r, mimetype="text/json")
+	# return render_template("common_investments.html",
+	# 					common_investments_set=common_investments_set)
 
 @app.route("/log-out", methods=['POST'])
 def log_out():
 
     session["user"] = {}
-    return "/"  # if I just return this, then I can use it in javascript.  Versus return redirect ('/') would just be used internal to flask and send me
+    return "/"
 
 
 if __name__ == "__main__":

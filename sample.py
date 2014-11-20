@@ -58,14 +58,13 @@ class VC():
 		cache = self.mc.get(self.vc_data_key)
 		if cache is not None:
 			print "Data was in cache."
-			# seed.load_investment_company(cache) # put the data into the DB, too.
 			return cache
 
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
 		self.mc.set(self.vc_data_key, data) # put the data into cache.
-		seed.load_investment_company(data) # put the data into the DB, too.
+		seed.load_investment_company(data) # put the data into the DB.
 		return data 
 
 	def get_investments(self):
@@ -82,7 +81,7 @@ class VC():
 
 		data = c.get_vc_portfolio(self.vc_path)
 		self.mc.set(self.vc_investments_key, data) # put the data into cache.
-		#seed.load_investment_details(data) # put the data into the DB, too.
+		#seed.load_investment_details(data) # put the data into the DB.
 				
 		return data
 
@@ -103,7 +102,6 @@ class PortfolioCompany():
 
 		cache = self.mc.get(self.pc_data_key)
 		if cache is not None:
-			# seed.load_portfolio_company(cache) # put the data into the DB, too.
 			return cache
 
 		c = Crunchbase()

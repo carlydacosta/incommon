@@ -14,6 +14,9 @@ class CompareVcs():
 		
 	def compare_investments(self): 
 
+		self.vc1.get_data()
+		self.vc2.get_data()	
+
 		print "at compare investments"
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
@@ -35,10 +38,7 @@ class CompareVcs():
 
 		return common_investments_set
 
-	def get_data(self):
-
-		self.vc1.get_data()
-		self.vc2.get_data()
+	
 
 class VC():
 
@@ -58,6 +58,7 @@ class VC():
 		cache = self.mc.get(self.vc_data_key)
 		if cache is not None:
 			print "Data was in cache."
+			seed.load_investment_company(cache)
 			return cache
 
 		c = Crunchbase()
@@ -102,6 +103,7 @@ class PortfolioCompany():
 
 		cache = self.mc.get(self.pc_data_key)
 		if cache is not None:
+			seed.load_portfolio_company(cache)
 			return cache
 
 		c = Crunchbase()

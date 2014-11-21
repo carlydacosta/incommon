@@ -27,6 +27,8 @@ def load_investment_company(vc_data):
 	
 	if "founded_on" in vc_data[PROPERTIES]:
 		founded = datetime.strptime(vc_data[PROPERTIES]["founded_on"], '%Y-%m-%d')
+	else:
+		founded = None
 
 	description = vc_data[PROPERTIES]["short_description"]
 	number_of_investments = vc_data[PROPERTIES]["number_of_investments"]
@@ -167,8 +169,8 @@ def load_iqt_vc_partners():
 
 
 def main():
-	# load_vc_list()
-	pass
+	load_vc_list()
+	# pass
 
 	
 if __name__ == "__main__":

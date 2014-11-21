@@ -2,8 +2,10 @@
 <html>
 	
 	<head>
-		<meta charset="UTF-8">
+		
 		<title>InCommon</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../static/vc_list.css"></link>
 	</head>
 	
 	<body>
@@ -36,9 +38,9 @@
 			<h3 id="results-heading"></h3>
 			<div id="results-list"></div>
 		</div>
-
-
-		
+		<div id="company-heading"></div>
+		<div id="company-results"></div>
+				
 		<!-- javascript so results div is replaced by list of companies, vc info when selected, company info when selected -->
 
 		
@@ -79,7 +81,7 @@
 		//event handler for home button.  when home button is clicked, send request to the /vc-list
 		$('#home').click(function(evt) {
 			evt.preventDefault();
-			alert("hi");
+			$(".typeahead").val('');
 			$("#results-div").hide();
             $("#search-form-div").show();
         });
@@ -102,15 +104,26 @@
 			console.log(str);
 			// $('#results-list').load("/ajax/common-investments");
 
-			$.get("/ajax/common-investments", str,
+			$.get(
+				"/ajax/common-investments", str,
 				function(result){
 					console.log(result);
-					$("#results-div").html(result);
+					$("#results-list").html(result);
 					$("#search-form-div").hide();
-					$("#results-heading").html("Common Investments")
-					$('#company-div').click(function(evt){
+					$("#results-heading").html("Common Investments");
+					$('.company').click(function(evt){
 						console.log("clicked on company");
+						var company = $(this).data("company"); //company is related to the data-company
 						// when i click on a company route to /ajax/company-data
+						$.get(
+							"/ajax/company-data",
+							{company : company},
+							function(result){
+								$("#company-results").html(result);
+								console.log(result);
+								$("#company-heading").html("Company Details");
+							}
+						);
 						// result will be html of company info w/ jinja
 						// insert result into 
 						
@@ -118,6 +131,7 @@
 				}
 			);
 		});
+
 
 		
 		</script>

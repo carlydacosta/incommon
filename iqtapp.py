@@ -1,5 +1,5 @@
 from flask import Flask, request, session, redirect, json, render_template, Response
-from model import User, VCList, session as dbsession
+from model import User, VCList, PortfolioCompany, session as dbsession
 import os
 import sample
 
@@ -92,14 +92,34 @@ def show_common_investments():
 	vc = sample.CompareVcs(vc1_path, vc2_path)
 	common_investments_set = list(vc.compare_investments())
 	
-	# if vc1 or vc2 == "In-Q-Tel"
+	if vc1 or vc2 == "In-Q-Tel":
+		print "querying db"
+
 		# query db for inqtel details filterby portfolio company name
 	
 	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
 	
-	html = render_template("common_investments.html",
+	return render_template("common_investments.html",
 						common_investments_set=common_investments_set)
-	return Response(html, mimetype="text/html")
+
+
+@app.route("/ajax/company-data", methods=['GET'])
+def show_company_data():
+	
+	pc_name = request.args.get("company")
+
+	#get company name
+	pc = dbsession.query(PortfolioCompany).filter_by(company_name = pc_name).first()
+
+	print pc.total_funding
+	 
+	return render_template("company_data.html",
+							description=pc.description,
+							founded=pc.founded,
+							homepage_url=pc.homepage_url,
+							city=pc.city,
+							state=pc.state,
+							total_funding=pc.total_funding)
 
 @app.route("/log-out", methods=['POST'])
 def log_out():

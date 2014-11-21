@@ -1,13 +1,16 @@
 <html>
 	
 	<div id='company-div'>
-		
+		<ul>
 		{% for company in common_investments_set %}
 			
-			<li id='company'> {{company}} </li>
+			<li class="company" data-company="{{company}}">{{company}}</li>
 		
 		{% endfor %}
-	
+		</ul>
+			
 	<div>
 
 </html>
+
+<!-- try to get both the name and id from query and save as a list of dict -->

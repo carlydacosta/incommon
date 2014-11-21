@@ -30,10 +30,10 @@ Base.query = session.query_property()
     
 
 class IqtDetail(Base):
-    __tablename__ = "iqtpartner"
+    __tablename__ = "iqtdetail"
 
     id = Column(Integer, primary_key = True)
-    investment_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
+    investment_id = Column(Integer, ForeignKey('investment.id'), nullable=False)
     portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
 
     partner_first_name = Column(String(120), nullable=False)
@@ -42,11 +42,15 @@ class IqtDetail(Base):
     equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
     ownership_percent = Column(Integer, nullable=True)  ### IQT information
 
+    portfoliocompany = relationship("PortfolioCompany", backref="iqtdetail")
+    investment = relationship("Investment", backref="iqtdetail")
+
 
 class User(Base):
     __tablename__= "user"
 
     id = Column(Integer, primary_key = True)
+
     first_name = Column(String(120), nullable=True)
     last_name = Column(String(120), nullable=True)
     email = Column(String(100), nullable = True)
@@ -76,6 +80,7 @@ class InvestmentCompany(Base):
     __tablename__ = "investmentcompany"
 
     id = Column(Integer, primary_key = True)
+
     uuid = Column(Integer, nullable=True)
     permalink = Column(String(120), nullable=False)
     name = Column(String(120), nullable=True)
@@ -108,6 +113,7 @@ class PortfolioCompany(Base):
     __tablename__ = "portfoliocompany"  ## company receiving funding from investment companies
     
     id = Column(Integer, primary_key=True)
+
     uuid = Column(Integer, nullable=False)
     permalink = Column(String(120), nullable=False)
     company_name = Column(String(120), nullable=True)
@@ -123,6 +129,7 @@ class VCList(Base):
     __tablename__ = "vc"
 
     id = Column(Integer, primary_key = True)
+
     name = Column(String(120), nullable=True)
     permalink = Column(String(120), nullable=False)
 
@@ -195,8 +202,9 @@ def create_tables():
 ### End class declarations
 
 def main():
-    """In case we need this for something"""
-    pass
+    # """In case we need this for something"""
+    # pass
+    create_tables()
 
 if __name__ == "__main__":
     main()

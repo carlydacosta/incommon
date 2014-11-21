@@ -14,10 +14,12 @@ class CompareVcs():
 		
 	def compare_investments(self): 
 
+		#returns VC data
 		self.vc1.get_data()
 		self.vc2.get_data()	
 
 		print "at compare investments"
+		# returns investment data
 		i_1 = self.vc1.get_investments()
 		i_2 = self.vc2.get_investments()
 

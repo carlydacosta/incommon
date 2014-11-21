@@ -1,5 +1,5 @@
 import model, sample
-from model import InvestmentCompany, PortfolioCompany, VCList
+from model import InvestmentCompany, PortfolioCompany, IqtDetail, VCList
 from datetime import datetime
 
 DATA="data"
@@ -151,25 +151,37 @@ def load_vc_list():
 	print "VCs added to the Database."
 
 def load_iqt_vc_partners():
+# need to fix this.  this is opening a file w/ partner investors, NOT pc companies like I thought!!	
 	
 	f = open("iqt_partners.csv").read()
 	vc_partner_list = f.strip().split('\r')
 
-	for vc_partner in vc_partner_list:
+	for line in vc_partner_list:
+		item = line.split(',')
+		pc_name = item[0]
+		pc_permalink = pc_name.lower().replace(" ", "-").replace("'","").replace(".","")
+		iqtpartner_first_name = item[1]
+		iqtpartner_last_name = item[2]
+		equity_percent_first_trans = item[3]
+		equity_percent_second_trans = item[4]
+		ownership_percent = item[5]
 
-		path = vc_partner.lower().replace(" ", "-")
+		iqtdetail = model.IqtDetail(
+					pc_name=pc_name,
+					pc_permalink=pc_permalink,
+					partner_first_name=iqtpartner_first_name,
+					partner_last_name=iqtpartner_last_name,
+					equity_percent_first_trans=equity_percent_first_trans,
+					equity_percent_second_trans=equity_percent_second_trans,
+					ownership_percent=ownership_percent)
 
-		iqtpartner = model.IqtPartner(
-					name=vc_partner,
-					permalink=path)
-
-	 	model.session.add(iqtpartner)
+	 	model.session.add(iqtdetail)
 
 	model.session.commit()
 
-
 def main():
 	load_vc_list()
+	# load_iqt_vc_partners()
 	# pass
 
 	

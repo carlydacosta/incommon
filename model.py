@@ -33,17 +33,14 @@ class IqtDetail(Base):
     __tablename__ = "iqtdetail"
 
     id = Column(Integer, primary_key = True)
-    investment_id = Column(Integer, ForeignKey('investment.id'), nullable=False)
-    portfoliocompany_id = Column(Integer, ForeignKey('portfoliocompany.id'), nullable=False)
-
+    pc_name = Column(String(120), nullable=False)
+    pc_permalink = Column(String(120), nullable=False)
     partner_first_name = Column(String(120), nullable=False)
     partner_last_name = Column(String(120), nullable=False)
     equity_percent_first_trans = Column(Integer, nullable=True)  ### IQT information
     equity_percent_second_trans = Column(Integer, nullable=True)  ### IQT information
     ownership_percent = Column(Integer, nullable=True)  ### IQT information
 
-    portfoliocompany = relationship("PortfolioCompany", backref="iqtdetail")
-    investment = relationship("Investment", backref="iqtdetail")
 
 
 class User(Base):
@@ -90,7 +87,9 @@ class InvestmentCompany(Base):
     number_of_investments = Column(Integer, nullable = True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
-    
+
+
+
     
 # Investment details as a result of an investment company and a portfolio company relationship   
 class Investment(Base):

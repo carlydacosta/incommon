@@ -1,7 +1,8 @@
 from flask import Flask, request, session, redirect, json, render_template, Response
-from model import User, VCList, PortfolioCompany, session as dbsession
+from model import User, VCList, PortfolioCompany, IqtDetail, session as dbsession
 import os
 import sample
+import datetime
 
 
 # configuration
@@ -74,33 +75,28 @@ def index():
 
 @app.route("/ajax/common-investments", methods=['GET'])  # route here when the 'find common investments' button is selected
 def show_common_investments():
+	
 	#get company names from form
 	vc1 = request.args.get("vc1")
 	vc2 = request.args.get("vc2")
-	print "printing vc1 and 2 #################: ", vc1, vc2
+	
+	print vc1, vc2, "what i am getting!!!!!!!!"
 	#query database for path
 	vc1_object = dbsession.query(VCList).filter_by(name = vc1).first()
-	print vc1_object
 	vc1_path = vc1_object.permalink.encode("utf8")
-	print vc1_path
-
-
-
+	
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
 	#use path to call the functions that return the common investments list
 	vc = sample.CompareVcs(vc1_path, vc2_path)
-	common_investments_set = list(vc.compare_investments())
+	common_investments_list = list(vc.compare_investments())
 	
-	if vc1 or vc2 == "In-Q-Tel":
-		print "querying db"
+	#create a list of dictionaries [{item1 name: , item1 id: }]
+	#
+	# common_investments_dict = [{"name":, "id"}
 
-		# query db for inqtel details filterby portfolio company name
-	
-	print "Flask common investments!!!!!!!!!!!!!!!!", common_investments_set
-	
 	return render_template("common_investments.html",
-						common_investments_set=common_investments_set)
+						common_investments_list=common_investments_list)
 
 
 @app.route("/ajax/company-data", methods=['GET'])
@@ -111,15 +107,39 @@ def show_company_data():
 	#get company name
 	pc = dbsession.query(PortfolioCompany).filter_by(company_name = pc_name).first()
 
-	print pc.total_funding
+	date_string = pc.founded.strftime("%B %d, %Y")
 	 
 	return render_template("company_data.html",
 							description=pc.description,
-							founded=pc.founded,
+							founded=date_string,
 							homepage_url=pc.homepage_url,
 							city=pc.city,
 							state=pc.state,
 							total_funding=pc.total_funding)
+
+@app.route("/ajax/iqt-company-detail", methods=['GET'])
+def show_iqt_company_details():
+
+	pc_name = request.args.get("company")
+	print pc_name
+	# check for company name in iqtdetail table
+	company_object = dbsession.query(IqtDetail).filter_by(pc_name=pc_name)
+	print company_object
+
+	if company_object:
+		iqtpartner_first_name = company_object.partner_first_name
+		iqtpartner_last_name = company_object.partner_last_name
+		equity_percent_first_trans = company_object.equity_percent_first_trans
+		equity_percent_second_trans = company_object.equity_percent_second_trans
+		ownership_percent = company_object.ownership_percent
+
+		return render_template("iqt_pc_detail.html",
+						iqtpartner_first_name=iqtpartner_first_name,
+						iqtpartner_last_name=iqtpartner_last_name,
+						equity_percent_first_trans=equity_percent_first_trans,
+						equity_percent_second_trans=equity_percent_second_trans,
+						ownership_percent=ownership_percent)
+
 
 @app.route("/log-out", methods=['POST'])
 def log_out():

@@ -5,7 +5,7 @@
 		
 		<title>InCommon</title>
 		<meta charset="UTF-8">
-		<link rel="stylesheet" href="../static/vc_list.css"></link>
+		<link rel="stylesheet" href="../static/css/vc_list.css"></link>
 	</head>
 	
 	<body>
@@ -36,18 +36,20 @@
 		
 		<div id="results-div">
 			<h3 id="results-heading"></h3>
-			<div id="results-list"></div>
+				<div id="results-list"></div>
+			<h3 id="company-heading"></h3>
+				<div id="company-results"></div>
+				<div id="iqt-company-results"></div>
 		</div>
-		<div id="company-heading"></div>
-		<div id="company-results"></div>
+		
 				
 		<!-- javascript so results div is replaced by list of companies, vc info when selected, company info when selected -->
 
 		
 
 		<!-- Load jQuery and the typeahead JS files -->
-		<script src="/static/jquery.js"></script>
-		<script src="/static/typeahead.bundle.js"></script>
+		<script src="/static/js/jquery.js"></script>
+		<script src="/static/js/typeahead.bundle.js"></script>
 	 
 		<!-- Handles the typeahead capability -->
 	 	<script>
@@ -102,9 +104,7 @@
 			evt.preventDefault();
 			var str = $("#search-form").serialize();
 			console.log(str);
-			// $('#results-list').load("/ajax/common-investments");
-
-			$.get(
+				$.get(
 				"/ajax/common-investments", str,
 				function(result){
 					console.log(result);
@@ -124,6 +124,15 @@
 								$("#company-heading").html("Company Details");
 							}
 						);
+						// this is for when the iqt detail table ready for query
+						// $.get(
+						// 	"/ajax/iqt-company-detail",
+						// 	{company : company},
+						// 	function(result){
+						// 		$("#iqt-company-results").html(result);
+						// 		console.log(result);
+						// 	}
+						// );
 						// result will be html of company info w/ jinja
 						// insert result into 
 						

@@ -1,16 +1,14 @@
-<html>
-	
-	<div id='company-div'>
-		<ul>
-		{% for company in common_investments_list %}
-			
-			<li class="company" data-company="{{company}}">{{company}}</li>
-		
-		{% endfor %}
-		</ul>
-			
-	<div>
 
-</html>
-
+<div class="container">
+	<div class="row" id="results-div">
+        <div class="col-lg-12" >
+			<h2>Common Investments</h2>
+			<h3>Select a company to view details</h3>
+          <ul>
+	        {% for company in common_investments_list %}	
+			<li class="company" data-company="{{company}}"><a href="#" class="list-group-item">{{company}}</a></li>
+			{% endfor %}
+        </div>
+	</div> <!--/row-->
+</div> <!--/container-->  
 <!-- try to get both the name and id from query and save as a list of dict -->

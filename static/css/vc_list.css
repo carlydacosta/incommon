@@ -4,11 +4,20 @@
 }
 
 .tt-query {
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.175);
 }
 
 .tt-hint {
-    color: #999
+    color: #999;
+    margin: 25px 25px 2.5px 10px;
+    height: 50px;
+    width: 300px;
+}
+
+.tt-input {
+    margin: 25px 25px 2.5px 10px;
+    height: 50px;
+    width: 300px;
 }
 
 .tt-dropdown-menu {
@@ -38,4 +47,13 @@
 
 .tt-suggestion p {
     margin: 0;
+}
+
+ul{
+    list-style-type: none;
+}
+
+#common-investments-button {
+    margin: 2.5px 5px 5px 5px;
+
 }

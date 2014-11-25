@@ -49,8 +49,8 @@ Application designed to search for the common investments (Portfolio Companies P
 The biggest pain point in my experience of building this application revolved around getting and storing the data.  The challenges:
 
 #### Exponential growth of API calls
-*API constraint of 50 calls per minute*
-*My code blew through the constraint for just one VC and it's 50+ PCs*
+* *API constraint of 50 calls per minute*
+* *My code blew through the constraint for just one VC and it's 50+ PCs*
 
 #### Time lag inherent in each call
 *Even if I called for the same info, it could take minutes before I got a response*

@@ -9,19 +9,28 @@
 
 .tt-hint {
     color: #999;
-    margin: 25px 25px 2.5px 10px;
     height: 50px;
     width: 300px;
 }
 
+.box-left {
+    /*background-color: black;*/
+    margin: 100px 25px 50px 0;
+}
+
+.box-right {
+    /*background-color: blue;*/
+    margin: 100px 0 0 0;
+}
+
 .tt-input {
-    margin: 25px 25px 2.5px 10px;
+   
     height: 50px;
     width: 300px;
 }
 
 .tt-dropdown-menu {
-    margin-top: 12px;
+    margin-top: 5px;
     padding: 8px 0;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -53,7 +62,43 @@ ul{
     list-style-type: none;
 }
 
-#common-investments-button {
-    margin: 2.5px 5px 5px 5px;
 
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container {
+  width: auto;
+  max-width: 680px;
+  padding: 0 15px;
+}
+.container .text-muted {
+  margin: 20px 0;
 }

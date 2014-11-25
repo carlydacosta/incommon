@@ -1,40 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="../static/circle_intersect.jpg">
     <title>InCommon</title>
+
+
+        <link rel="stylesheet" href="../static/css/signin.css"></link>
+        <!-- Bootstrap stylesheet -->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
 </head>
 <body>
-
-    <h1 class="nav">InCommon</h1>
-
-
-
-    <div class="forms">
-
-        <div class="form-container">
-            <h2>Please log in.</h2>
-            <h3 class="warning"></h3>
-
-            <form id="log-in-form" action="/login" method="POST">
-                    <div>Email<input type="text" class="input-text" name="user-email"></div>
-                    <div>Password<input type="text" class="input-text" name="user-password"></div>
-                <button id="log-in-button" type="submit">Log In</button>
-            </form>
-        </div>
-
-        <div class="form-container">
-            <h2>New user? Sign up here.</h2>
-
-            <form id="sign-up-form" action="/new-user" method="POST">
-                    <div>First Name<input type="text" class="input-text" name="first-name"></div>
-                    <div>Last Name<input type="text" class="input-text" name="last-name"></div>
-                    <div>Email<input type="text" class="input-text" name="new-user-email"></div>
-                    <div>Password<input type="text" class="input-text" name="new-user-password"></div>             
-                <button id="sign-up-button" type="submit">Sign Up</button>
-            </form>
-        </div>
-
+    <div class="container">
+        <h1 class="nav"><img class="img-rounded" src="../static/circle_intersect.jpg" alt="Generic placeholder image" style="width: 175px; height: 175px;">Welcome to InCommon</h1>
     </div>
+    
+    <div class="container">
 
+      <form id="log-in-form" class="form-signin" role="form" action="/login" method="POST">
+        <h2 class="form-signin-heading">Sign in</h2>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input name="user-email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input name="user-password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" id="log-in-button" type="submit">Sign in</button>
+      </form>
+
+    </div> <!-- /container -->
+
+    <div class="container">
+
+      <form id="sign-up-form" class="form-signin" role="form" action="/new-user" method="POST">
+        <h2 class="form-signin-heading">Sign up</h2>
+        <label for="inputFirstName" class="sr-only">First Name</label>
+        <input type="text" id="inputFirstName" class="form-control" name="first-name" placeholder="First name" required autofocus>
+        <label for="inputLastName" class="sr-only">Last Name</label>
+        <input type="text" id="inputLastName" class="form-control" name="last-name" placeholder="Last name" required autofocus>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" name="new-user-email" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" name="new-user-password" placeholder="Password" required>
+        <button id="sign-up-button" class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+      </form>
+
+    </div> <!-- /container -->
+<!-- Load Bootstrap -->
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+         
     </body>
 </html>

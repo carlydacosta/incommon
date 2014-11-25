@@ -30,8 +30,9 @@ var vcs = new Bloodhound({
 		//event handler for home button.  when home button is clicked, send request to the /vc-list
 		$('#home').click(function(evt) {
 			evt.preventDefault();
+			$("#search-form").show();
 			$(".typeahead").val('');
-			$("#results-div").hide();
+			$("#results-list").hide();
 			$("#company-details").hide();
         });
 
@@ -55,7 +56,8 @@ var vcs = new Bloodhound({
 				"/ajax/common-investments", str,
 				function(result){
 					console.log(result);
-					$(".typeahead").val('');
+					// $(".typeahead").val('');
+					$("#search-form").hide();
 					$("#results-list").html(result);
 					
 					$('.company').click(function(evt){

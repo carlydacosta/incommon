@@ -1,17 +1,4 @@
 /env
-crunchbase_odm_csv/crunchbase_license.txt
-crunchbase_odm_csv/organizations.csv
-crunchbase_odm_csv/people.csv
-crunchbase_odm_json/crunchbase_license.txt
-crunchbase_odm_json/organizations.json
-crunchbase_odm_json/people.json
-Memcached info
-data/api_paths.txt
-data/create_db.txt
-data/iqt_data.csv
-data/iqt_partners.csv
+/ignore
 memcache.py
-model2.py
-model_old.py
-old_code.py
 *.pyc

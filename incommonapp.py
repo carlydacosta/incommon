@@ -1,9 +1,7 @@
-from flask import Flask, request, session, redirect, json, render_template, Response
-from model import User, VCList, PortfolioCompany, IqtDetail, session as dbsession
+from flask import Flask, request, session, redirect, render_template
+from table_class_objects import User, VCList, PortfolioCompany, session as dbsession
 import os
-import sample
-import datetime
-
+import class_objects
 
 # configuration
 APP_SECRET_KEY = os.environ.get('APP_SECRET_KEY')
@@ -88,7 +86,7 @@ def show_common_investments():
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
 	#use path to call the functions that return the common investments list
-	vc = sample.CompareVcs(vc1_path, vc2_path)
+	vc = class_objects.CompareVcs(vc1_path, vc2_path)
 	common_investments_list = list(vc.compare_investments())
 	
 	#create a list of dictionaries [{item1 name: , item1 id: }]
@@ -115,7 +113,7 @@ def show_company_data():
 							homepage_url=pc.homepage_url,
 							city=pc.city,
 							state=pc.state,
-							total_funding=pc.total_funding)
+							total_funding=format_currency(pc.total_funding))
 
 @app.route("/ajax/iqt-company-detail", methods=['GET'])
 def show_iqt_company_details():
@@ -147,6 +145,8 @@ def log_out():
     session["user"] = {}
     return "/"
 
+def format_currency(value):
+    return "${:,}".format(value)
 
 if __name__ == "__main__":
 	app.run(debug=True)

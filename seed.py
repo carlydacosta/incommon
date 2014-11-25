@@ -1,5 +1,5 @@
-import model, sample
-from model import InvestmentCompany, PortfolioCompany, IqtDetail, VCList
+import table_class_objects, class_objects
+from table_class_objects import InvestmentCompany, PortfolioCompany, VCList
 from datetime import datetime
 
 DATA="data"
@@ -13,7 +13,7 @@ HEADQUARTERS="headquarters"
 def load_investment_company(vc_data):
 	
 	# Query the Database for the uuid
-	uuid = model.session.query(InvestmentCompany).filter_by(uuid = vc_data["uuid"]).first()
+	uuid = table_class_objects.session.query(InvestmentCompany).filter_by(uuid = vc_data["uuid"]).first()
 	# If the uuid is already in the Database, do nothing
 	if uuid:
 		print "Investment Company already in the Database."
@@ -36,7 +36,7 @@ def load_investment_company(vc_data):
 	state = vc_data[RELATIONSHIPS][HEADQUARTERS][ITEMS][0]["region"]
 
 	# Create an investment company in the DB
-	investmentcompany = model.InvestmentCompany(
+	investmentcompany = table_class_objects.InvestmentCompany(
 		uuid=uuid,
 		permalink=permalink, 
 		name=name, 
@@ -48,16 +48,16 @@ def load_investment_company(vc_data):
 		state=state)
 
 	# Add it to the session
-	model.session.add(investmentcompany)
+	table_class_objects.session.add(investmentcompany)
 	# Commit the session
-	model.session.commit()
+	table_class_objects.session.commit()
 
 	print "Investment Company added to the Database."
 
 
 def load_portfolio_company(pc_data):
 	# Query the Database for the uuid
-	uuid = model.session.query(PortfolioCompany).filter_by(uuid = pc_data["uuid"]).first()
+	uuid = table_class_objects.session.query(PortfolioCompany).filter_by(uuid = pc_data["uuid"]).first()
 
 	# If the uuid is already in the Database, do nothing
 	if uuid:
@@ -96,7 +96,7 @@ def load_portfolio_company(pc_data):
 		description = None
 	
 	# Create an investment company in the DB
-	portfoliocompany = model.PortfolioCompany(
+	portfoliocompany = table_class_objects.PortfolioCompany(
 		uuid=uuid,
 		permalink=permalink,
 		company_name=company_name,
@@ -108,16 +108,16 @@ def load_portfolio_company(pc_data):
 		description=description)
 
 	# Add it to the session
-	model.session.add(portfoliocompany)
+	table_class_objects.session.add(portfoliocompany)
 	# Commit it to the session
-	model.session.commit()
+	table_class_objects.session.commit()
 	print "Portfolio Company added to the Database."
 
 
 def load_vc_list():
-# This seed function takes the data from memcache.  The function save_vc_list in the sample.py file gets the list from Crunchbase.
+# This seed function takes the data from memcache.  The function save_vc_list in the class_objects.py file gets the list from Crunchbase.
 # There is an easier way to do this, but for now this works...
-	mc = sample.memcache.Client(['127.0.0.1:11211'], debug=0)
+	mc = class_objects.memcache.Client(['127.0.0.1:11211'], debug=0)
 
 	for page in range(1, 19):
 		print "#####################################  Page: ", page
@@ -129,7 +129,7 @@ def load_vc_list():
 		# each page has list of vc
 		for vc in vc_page["items"]:
 			# Query the Database for the name
-			name = model.session.query(VCList).filter_by(name = vc["name"]).first()
+			name = table_class_objects.session.query(VCList).filter_by(name = vc["name"]).first()
 
 			# If the name is already in the Database, do nothing
 			if name:
@@ -139,50 +139,21 @@ def load_vc_list():
 			else:
 				permalink = vc["path"].split("/")
 
-				vc = model.VCList(
+				vc = table_class_objects.VCList(
 					name = vc["name"],
 					permalink = permalink[1])
 				print "Added VC to database."
 				# Add it to the session
-				model.session.add(vc)
+				table_class_objects.session.add(vc)
 	
 	# Commit it to the session
-	model.session.commit()
+	table_class_objects.session.commit()
 	print "VCs added to the Database."
 
-def load_iqt_vc_partners():
-# need to fix this.  this is opening a file w/ partner investors, NOT pc companies like I thought!!	
-	
-	f = open("iqt_partners.csv").read()
-	vc_partner_list = f.strip().split('\r')
-
-	for line in vc_partner_list:
-		item = line.split(',')
-		pc_name = item[0]
-		pc_permalink = pc_name.lower().replace(" ", "-").replace("'","").replace(".","")
-		iqtpartner_first_name = item[1]
-		iqtpartner_last_name = item[2]
-		equity_percent_first_trans = item[3]
-		equity_percent_second_trans = item[4]
-		ownership_percent = item[5]
-
-		iqtdetail = model.IqtDetail(
-					pc_name=pc_name,
-					pc_permalink=pc_permalink,
-					partner_first_name=iqtpartner_first_name,
-					partner_last_name=iqtpartner_last_name,
-					equity_percent_first_trans=equity_percent_first_trans,
-					equity_percent_second_trans=equity_percent_second_trans,
-					ownership_percent=ownership_percent)
-
-	 	model.session.add(iqtdetail)
-
-	model.session.commit()
 
 def main():
 	load_vc_list()
-	# load_iqt_vc_partners()
-	# pass
+	pass
 
 	
 if __name__ == "__main__":

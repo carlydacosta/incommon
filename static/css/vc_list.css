@@ -63,10 +63,20 @@ ul{
 }
 
 
+
 .center-block {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.center{
+    text-align: center;
+    margin: 100px 0 50px 0;
+}
+
+.typeahead{
+    margin:10px;
 }
 
 

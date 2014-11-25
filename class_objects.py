@@ -186,15 +186,6 @@ class Crunchbase():
 
 
 def main():
-	# vc = CompareVcs('sutter-hill-ventures', 'in-q-tel')
-	# vc.compare_investments()
-	# vc = VC('avalon-ventures')
-	# vc.get_data()
-	# pc = PortfolioCompany('memsql')
-	# pc.get_data()
-	# c = Crunchbase()
-	# c.get_vc_list()
-	# save_vc_list()
 	pass
 
 	

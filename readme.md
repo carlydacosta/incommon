@@ -53,22 +53,22 @@ The biggest pain point in my experience of building this application revolved ar
 * *My code blew through the constraint for just one VC and it's 50+ PCs*
 
 #### Time lag inherent in each call
-*Even if I called for the same info, it could take minutes before I got a response*
+* *Even if I called for the same info, it could take minutes before I got a response*
 
 
 ## Solution:
 
 #### Memcache
-*This key-value store saves precious time in development and deployment*
-*Non-persistent storage is great, but limits examining relationships.*
+* *This key-value store saves precious time in development and deployment*
+* *Non-persistent storage is great, but limits examining relationships.*
 
 #### Refactoring
-*Take user input of two VCs, make the API call for only their information*
-*Make API call for a list of their PCs*
-*Find the common PCs between them and make the API call for only those PCs*
-*Make subsequent API calls for additional info relating only to them (image, funding round info)*
-*Store the response for each call in  memcache and the DB*
-*One step before each API call however: first check memcache and if not there then check the DB*
+* *Take user input of two VCs, make the API call for only their information*
+* *Make API call for a list of their PCs*
+* *Find the common PCs between them and make the API call for only those PCs*
+* *Make subsequent API calls for additional info relating only to them (image, funding round info)*
+* *Store the response for each call in  memcache and the DB*
+* *One step before each API call however: first check memcache and if not there then check the DB*
 
 Contact information
 ---------------------------------

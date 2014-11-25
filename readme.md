@@ -6,11 +6,11 @@ Application designed to search for the common investments between two Venture Ca
 
 ### Demonstrate my understanding of the following technologies after just 5 weeks of study:
 * Integrating an API
-* Using persistent and persistent & non-persistent storage to maximize performance
-* Web framework
-* Templating language
+* Using persistent & non-persistent storage to maximize performance
+* Web frameworks
+* Templating languages
 * Javascript's jQuery and AJAX libraries
-* Front-end framework
+* Front-end frameworks
 
 ## Stack
 
@@ -38,36 +38,40 @@ Application designed to search for the common investments between two Venture Ca
 * Browse to the application at [http://localhost:5000]
 
 ## Breakdown
--incommonapp.py: runs the program, contains the Flask routes
--class_objects.py:  contains the VC, PC, and Crunchbase classes
--table_class_objects.py:  contains the database table classes
--incommon.db:  store user, VC and PC information
+* incommonapp.py: runs the program, contains the Flask routes
+* class_objects.py:  contains the VC, PC, and Crunchbase classes
+* table_class_objects.py:  contains the database table classes
+* incommon.db:  store user, VC and PC information
 
 
 ## Experiential Learning
 
 The biggest pain point in my experience of building this application revolved around getting and storing the data.  The challenges:
 
-* Exponential growth of API calls
-- API constraint of 50 calls per minute
-- My code blew through the constraint for just one VC and it's 50+ PCs
+### Exponential growth of API calls
+* API constraint of 50 calls per minute
+* My code blew through the constraint for just one VC and it's 50+ PCs
 
-* Time lag inherent in each call
-- Even if I called for the same info, it could take minutes before I got a response 
+### Time lag inherent in each call
+* Even if I called for the same info, it could take minutes before I got a response 
 
 
 ## Solution:
 
-#### Memcache
--This key-value store saves precious time in development and deployment
--Non-persistent storage gets me .  Especially when one of my goals is to play with the data and look at relationships, an option only with my SQLite DB.
+### Memcache
+* This key-value store saves precious time in development and deployment
+* Non-persistent storage gets me .  Especially when one of my goals is to play with the data and look at relationships, an option only with my SQLite DB.
 
-#### Refactoring
+### Refactoring
 My solution to avoid the exponential API calling was to adapt my code to the following logic:
--Take user input of two VCs, make the API call for only their information
--Make API call for a list of their PCs
--Find the common PCs between them and make the API call for only those PCs
--Make subsequent API calls for additional info relating only to them (image, funding round info)
--Store the response for each call in  memcache and the DB.
+* Take user input of two VCs, make the API call for only their information
+* Make API call for a list of their PCs
+* Find the common PCs between them and make the API call for only those PCs
+* Make subsequent API calls for additional info relating only to them (image, funding round info)
+* Store the response for each call in  memcache and the DB.
 
 One step before each API call however: first check memcache and if not there then check the DB.
+
+Contact information
+---------------------------------
+email: carly.a.dacosta@gmail.com

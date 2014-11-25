@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, relationship, scoped_session
 
 
 
-engine = create_engine("sqlite:///crunchbase_iqt.db", echo=True)
+engine = create_engine("sqlite:///incommon.db", echo=True)
 session = scoped_session(sessionmaker(bind=engine,
                                     autocommit = False,
                                     autoflush = False))

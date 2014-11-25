@@ -48,21 +48,21 @@ Application designed to search for the common investments (Portfolio Companies P
 
 The biggest pain point in my experience of building this application revolved around getting and storing the data.  The challenges:
 
-* Exponential growth of API calls
+### Exponential growth of API calls
 *API constraint of 50 calls per minute*
 *My code blew through the constraint for just one VC and it's 50+ PCs*
 
-* Time lag inherent in each call
+### Time lag inherent in each call
 *Even if I called for the same info, it could take minutes before I got a response*
 
 
 ## Solution:
 
-* Memcache
+### Memcache
 *This key-value store saves precious time in development and deployment*
 *Non-persistent storage is great, but limits examining relationships.*
 
-* Refactoring
+### Refactoring
 My solution to avoid the exponential API calling was to adapt my code to the following logic:
 *Take user input of two VCs, make the API call for only their information*
 *Make API call for a list of their PCs*

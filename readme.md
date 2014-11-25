@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Application designed to search for the common investments between two Venture Capital (VC) firms and view the details of each investment.
+Application designed to search for the common investments (Portfolio Companies PC) between two Venture Capital (VC) firms and view the details of each PC.
 
 ### Demonstrate my understanding of the following technologies after just 5 weeks of study:
 * Integrating an API
@@ -44,25 +44,25 @@ Application designed to search for the common investments between two Venture Ca
 * incommon.db:  store user, VC and PC information
 
 
-## Experiential Learning
+## Experiential Learning:
 
 The biggest pain point in my experience of building this application revolved around getting and storing the data.  The challenges:
 
-### Exponential growth of API calls
+*Exponential growth of API calls*
 * API constraint of 50 calls per minute
 * My code blew through the constraint for just one VC and it's 50+ PCs
 
-### Time lag inherent in each call
+*Time lag inherent in each call*
 * Even if I called for the same info, it could take minutes before I got a response 
 
 
 ## Solution:
 
-### Memcache
+*Memcache*
 * This key-value store saves precious time in development and deployment
 * Non-persistent storage gets me .  Especially when one of my goals is to play with the data and look at relationships, an option only with my SQLite DB.
 
-### Refactoring
+*Refactoring*
 My solution to avoid the exponential API calling was to adapt my code to the following logic:
 * Take user input of two VCs, make the API call for only their information
 * Make API call for a list of their PCs

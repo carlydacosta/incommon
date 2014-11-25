@@ -1,1 +1,0 @@
-sqlite3 crunchbase_iqt.db .dump | python dump_for_mysql.py > dump.sql

@@ -4,7 +4,7 @@
 
 Application designed to search for the common investments between two Venture Capital (VC) firms and view the details of each investment.
 
-### Demonstrate my understanding of:
+### Demonstrate my understanding of the following technologies after just 5 weeks of study:
 * Integrating an API
 * Using persistent and persistent & non-persistent storage to maximize performance
 * Web framework
@@ -35,33 +35,34 @@ Application designed to search for the common investments between two Venture Ca
     ```
     python incommonapp.py
     ```
-* Browse to the application at [http://localhost:3000]
+* Browse to the application at [http://localhost:5000]
+
+## Breakdown
+-incommonapp.py: runs the program, contains the Flask routes
+-class_objects.py:  contains the VC, PC, and Crunchbase classes
+-table_class_objects.py:  contains the database table classes
+-incommon.db:  store user, VC and PC information
+
 
 ## Experiential Learning
 
-The most prominent lessons learned through my experience of building this application revolved around getting and storing the data.  The grand plan initially was to just make all the Crunchbase API calls I needed and seed my database so I could query for information and play with the data.  This would be the simple part, I thought.
-
-I spent days thinking through the setup of my database structure, which tables would relate by which kind of relationships.  I rolled up my sleeves and started writing the code necessary to call the API, only to find I made a huge assumption about my understanding of this API.  The resulting challenges:
+The biggest pain point in my experience of building this application revolved around getting and storing the data.  The challenges:
 
 * Exponential growth of API calls
+- API constraint of 50 calls per minute
+- My code blew through the constraint for just one VC and it's 50+ PCs
+
 * Time lag inherent in each call
+- Even if I called for the same info, it could take minutes before I got a response 
 
-### Exponential growth:
-My initial plan for data collection was to simply hit the API for all VCs, their investments (Portfolio Companies (PC)), and associated data I wanted for my relational DB tables.  It did not take long for me to blow through the API constraint of 50 calls per minute.  Most VCs had way more than 50 PCs and I had to make one API call for each of those companies to get the PC data I wanted for the database.  Moreover, not all VC and PC data I wanted was in a single response. I had to make separate calls even for the image and funding round information.  All of this meant that just ONE API call for a single VC would set off a chain of events leading to exponential growth of API calls.  Crunchbase sent me emails about being a noob.  I did not want to be a noob.
-
-### API call Time lag:
-I quickly learned that making an API call meant a long lag, regardless if I'd just made a call for the same information, wasting precious seconds of my development time.
-
-
-Given thes challenged I thought there had to be another way!
 
 ## Solution:
-### Enter memcached and refactoring:
 
-#### Memcache:
-I learned quickly how this key-value store could save precious time in development and deployment.  But I also understood the risk of using only memcache since it is not persistent storage.  Especially when one of my goals is to play with the data and look at relationships, an option only with my SQLite DB.
+#### Memcache
+-This key-value store saves precious time in development and deployment
+-Non-persistent storage gets me .  Especially when one of my goals is to play with the data and look at relationships, an option only with my SQLite DB.
 
-#### Refactoring:
+#### Refactoring
 My solution to avoid the exponential API calling was to adapt my code to the following logic:
 -Take user input of two VCs, make the API call for only their information
 -Make API call for a list of their PCs

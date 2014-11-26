@@ -1,0 +1,11 @@
+Flask==0.10.1
+Flask-Passlib==0.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+SQLAlchemy==0.9.8
+Werkzeug==0.9.6
+itsdangerous==0.24
+passlib==1.6.1
+python-memcached==1.53
+requests==2.4.3
+wsgiref==0.1.2

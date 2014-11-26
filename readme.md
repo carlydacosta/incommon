@@ -2,26 +2,26 @@
 
 ## Purpose
 
-Application designed to search for the common investments (Portfolio Companies PC) between two Venture Capital (VC) firms and view the details of each PC.
+Application designed to search for the common investments Portfolio Companies (PC) between two Venture Capital (VC) firms and view the details of each PC.
 
 ### Demonstrate my understanding of the following technologies after my time as a fellow at Hackbright Academy:
 * Integrating an API
 * Using persistent & non-persistent storage to maximize performance
 * Web frameworks
 * Templating languages
-* Javascript's jQuery and AJAX libraries
+* Javascript, AJAX, and the jQuery library
 * Front-end frameworks
 
 ## Stack
 
 * API: [Crunchbase](https://developer.crunchbase.com/)
-* Persistent storage: [Sqlite](http://www.sqlite.org/)
+* Persistent storage: [SQLite](http://www.sqlite.org/)
 * Non-persistent storage: [Memcached](http://memcached.org/)
 * Backend: [Python](https://www.python.org/)
 * [Flask web microframework](http://flask.pocoo.org/)
 * [Jinja2](http://jinja.pocoo.org/docs/dev/) templating for Python
 * Javascript ([JQuery](http://jquery.com/)/[AJAX](http://api.jquery.com/category/ajax/)) on the client
-* CSS based on [Twitter's boostrap](http://twitter.github.com/bootstrap/)
+* CSS based on [Twitter Bootstrap](http://twitter.github.com/bootstrap/)
 
 ## Features
 
@@ -51,7 +51,11 @@ $ . env/bin/activate
     ```
     python incommonapp.py
     ```
+<<<<<<< HEAD
 5) Browse to the application at [http://localhost:5000]
+=======
+* Browse the application at [http://localhost:5000]
+>>>>>>> 1d0945088ed4d97e4475bedabadb916941925556
 
 ## Breakdown
 * incommonapp.py: runs the program, contains the Flask routes

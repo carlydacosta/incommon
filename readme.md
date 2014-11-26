@@ -51,11 +51,8 @@ $ . env/bin/activate
     ```
     python incommonapp.py
     ```
-<<<<<<< HEAD
-5) Browse to the application at [http://localhost:5000]
-=======
-* Browse the application at [http://localhost:5000]
->>>>>>> 1d0945088ed4d97e4475bedabadb916941925556
+5) Browse the application at [http://localhost:5000]
+
 
 ## Breakdown
 * incommonapp.py: runs the program, contains the Flask routes

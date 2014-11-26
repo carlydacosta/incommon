@@ -64,7 +64,7 @@ $ . env/bin/activate
 ![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.jpg)
 
 ## View PC details
-![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.jpg)
+![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon2.jpg)
 
 ## Experiential Learning:
 

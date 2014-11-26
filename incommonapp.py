@@ -115,28 +115,28 @@ def show_company_data():
 							state=pc.state,
 							total_funding=format_currency(pc.total_funding))
 
-@app.route("/ajax/iqt-company-detail", methods=['GET'])
-def show_iqt_company_details():
+# @app.route("/ajax/iqt-company-detail", methods=['GET'])
+# def show_iqt_company_details():
 
-	pc_name = request.args.get("company")
-	print pc_name
-	# check for company name in iqtdetail table
-	company_object = dbsession.query(IqtDetail).filter_by(pc_name=pc_name)
-	print company_object
+# 	pc_name = request.args.get("company")
+# 	print pc_name
+# 	# check for company name in iqtdetail table
+# 	company_object = dbsession.query(IqtDetail).filter_by(pc_name=pc_name)
+# 	print company_object
 
-	if company_object:
-		iqtpartner_first_name = company_object.partner_first_name
-		iqtpartner_last_name = company_object.partner_last_name
-		equity_percent_first_trans = company_object.equity_percent_first_trans
-		equity_percent_second_trans = company_object.equity_percent_second_trans
-		ownership_percent = company_object.ownership_percent
+# 	if company_object:
+# 		iqtpartner_first_name = company_object.partner_first_name
+# 		iqtpartner_last_name = company_object.partner_last_name
+# 		equity_percent_first_trans = company_object.equity_percent_first_trans
+# 		equity_percent_second_trans = company_object.equity_percent_second_trans
+# 		ownership_percent = company_object.ownership_percent
 
-		return render_template("iqt_pc_detail.html",
-						iqtpartner_first_name=iqtpartner_first_name,
-						iqtpartner_last_name=iqtpartner_last_name,
-						equity_percent_first_trans=equity_percent_first_trans,
-						equity_percent_second_trans=equity_percent_second_trans,
-						ownership_percent=ownership_percent)
+# 		return render_template("iqt_pc_detail.html",
+# 						iqtpartner_first_name=iqtpartner_first_name,
+# 						iqtpartner_last_name=iqtpartner_last_name,
+# 						equity_percent_first_trans=equity_percent_first_trans,
+# 						equity_percent_second_trans=equity_percent_second_trans,
+# 						ownership_percent=ownership_percent)
 
 
 @app.route("/log-out", methods=['POST'])

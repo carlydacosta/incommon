@@ -56,10 +56,10 @@ var vcs = new Bloodhound({
 				"/ajax/common-investments", str,
 				function(result){
 					console.log(result);
-					// $(".typeahead").val('');
+					$("#results-list").show();
 					$("#search-form").hide();
 					$("#results-list").html(result);
-					
+					//event handler for the selecting a company in the list
 					$('.company').click(function(evt){
 						console.log("clicked on company");
 						var company = $(this).data("company"); //company is related to the data-company
@@ -69,6 +69,7 @@ var vcs = new Bloodhound({
 							{company : company},
 							function(result){
 								$("#company-details").html(result);
+								$("#company-details").show();
 								console.log(result);
 							}
 						);

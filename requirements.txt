@@ -6,6 +6,7 @@ SQLAlchemy==0.9.8
 Werkzeug==0.9.6
 itsdangerous==0.24
 passlib==1.6.1
+psycopg2==2.5.4
 python-memcached==1.53
 requests==2.4.3
 wsgiref==0.1.2

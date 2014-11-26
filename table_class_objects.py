@@ -2,10 +2,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship, scoped_session
+import os
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 
-
-engine = create_engine("sqlite:///incommon.db", echo=True)
+engine = create_engine(DATABASE_URL, echo=True)
 session = scoped_session(sessionmaker(bind=engine,
                                     autocommit = False,
                                     autoflush = False))
@@ -27,7 +29,7 @@ Base.query = session.query_property()
 
 
 class User(Base):
-    __tablename__= "user"
+    __tablename__= "users"
 
     id = Column(Integer, primary_key = True)
 
@@ -43,10 +45,10 @@ class InvestmentCompany(Base):
 
     id = Column(Integer, primary_key = True)
 
-    uuid = Column(Integer, nullable=True)
+    uuid = Column(String(50), nullable=True)
     permalink = Column(String(120), nullable=False)
     name = Column(String(120), nullable=True)
-    homepage_url = Column(String(30), nullable=True)
+    homepage_url = Column(String(100), nullable=True)
     founded = Column(DateTime, nullable=True)
     description = Column(Text, nullable=True)
     number_of_investments = Column(Integer, nullable = True)
@@ -78,12 +80,12 @@ class PortfolioCompany(Base):
     
     id = Column(Integer, primary_key=True)
 
-    uuid = Column(Integer, nullable=False)
+    uuid = Column(String(50), nullable=False)
     permalink = Column(String(120), nullable=False)
     company_name = Column(String(120), nullable=True)
     city = Column(String(64), nullable=True)
     state = Column(String(64), nullable=True)
-    homepage_url = Column(String(30), nullable=True)
+    homepage_url = Column(String(100), nullable=True)
     founded = Column(DateTime, nullable=True)
     total_funding = Column(Integer, nullable=True)
     description = Column(Text, nullable=True)
@@ -96,7 +98,7 @@ class VCList(Base):
     id = Column(Integer, primary_key = True)
 
     name = Column(String(120), nullable=True)
-    permalink = Column(String(120), nullable=False)
+    permalink = Column(Text, nullable=False)
 
 
 

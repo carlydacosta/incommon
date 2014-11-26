@@ -4,7 +4,7 @@
 
 Application designed to search for the common investments (Portfolio Companies PC) between two Venture Capital (VC) firms and view the details of each PC.
 
-### Demonstrate my understanding of the following technologies after just 5 weeks of study:
+### Demonstrate my understanding of the following technologies after my time as a fellow at Hackbright Academy:
 * Integrating an API
 * Using persistent & non-persistent storage to maximize performance
 * Web frameworks
@@ -30,12 +30,28 @@ Application designed to search for the common investments (Portfolio Companies P
 * Responsive design
 
 ## Running
-### Start the Server
-* Run the server
+
+1) First, clone this directory to your computer.
+
+<pre><code>$ git clone https://github.com/carlydacosta/finalprojectiqt.git</code></pre>
+
+2) Create and activate a virtual environment in the same directory: 
+
+<pre><code>$ pip install virtualenv
+$ virtualenv env
+$ . env/bin/activate 
+</code></pre>
+
+3) Install the required packages using pip:
+
+<pre><code>(env)$ pip install -r requirements.txt
+</code></pre>
+
+4) Run the server
     ```
     python incommonapp.py
     ```
-* Browse to the application at [http://localhost:5000]
+5) Browse to the application at [http://localhost:5000]
 
 ## Breakdown
 * incommonapp.py: runs the program, contains the Flask routes

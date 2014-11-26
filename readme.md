@@ -60,6 +60,11 @@ $ . env/bin/activate
 * table_class_objects.py:  contains the database table classes
 * incommon.db:  store user, VC and PC information
 
+## Input VCs
+![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.png)
+
+## View PC details
+![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.png)
 
 ## Experiential Learning:
 

@@ -61,10 +61,10 @@ $ . env/bin/activate
 * incommon.db:  store user, VC and PC information
 
 ## Input VCs
-![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.png)
+![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.jpg)
 
 ## View PC details
-![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.png)
+![picture](https://github.com/carlydacosta/finalprojectiqt/blob/master/static/incommon1.jpg)
 
 ## Experiential Learning:
 

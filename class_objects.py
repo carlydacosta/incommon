@@ -1,5 +1,9 @@
 import memcache, requests, os, seed
 
+MEMCACHE_SERVERS = os.environ.get('MEMCACHE_SERVERS')
+MEMCACHIER_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
+MEMCACHIER_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
+
 DATA="data"
 ITEMS="items"
 
@@ -47,7 +51,8 @@ class VC():
 	def __init__(self, vc_path):
 		if vc_path is None:
 			raise Exception("No VC path received to instantiate VC instance.")
-		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+		self.mc = memcache.Client([MEMCACHE_SERVERS],[MEMCACHIER_USERNAME],
+                               [MEMCACHIER_PASSWORD], debug=0)
 		self.vc_path = vc_path
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
@@ -95,7 +100,8 @@ class PortfolioCompany():
 	def __init__(self, pc_path):
 		if pc_path is None:
 			print "No PC path received to instantiate PC instance."
-		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+		self.mc = memcache.Client([MEMCACHE_SERVERS],[MEMCACHIER_USERNAME],
+                               [MEMCACHIER_PASSWORD], debug=0)
 		self.pc_path = pc_path
 		self.pc_data_key = "data-%s" % pc_path
 		
@@ -120,7 +126,8 @@ class PortfolioCompany():
 def save_vc_list():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
 	API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-	mc = memcache.Client(['127.0.0.1:11211'], debug=0)	
+	mc = memcache.Client([MEMCACHE_SERVERS],[MEMCACHIER_USERNAME],
+                               [MEMCACHIER_PASSWORD], debug=0)	
 	c = Crunchbase()
 
 	data = c.get_vc_list()
@@ -155,7 +162,8 @@ class Crunchbase():
 	
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-		self.mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+		self.mc = memcache.Client([MEMCACHE_SERVERS],[MEMCACHIER_USERNAME],
+                               [MEMCACHIER_PASSWORD], debug=0)
 
 	def get_vc_list(self):
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)

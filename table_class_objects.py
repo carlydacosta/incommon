@@ -2,7 +2,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship, scoped_session
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
+
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -37,6 +39,12 @@ class User(Base):
     last_name = Column(String(120), nullable=True)
     email = Column(String(100), nullable = True)
     password = Column(String(100), nullable=True)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
      
 

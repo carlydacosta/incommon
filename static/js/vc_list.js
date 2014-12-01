@@ -63,7 +63,7 @@ var vcs = new Bloodhound({
 					$('.company').click(function(evt){
 						console.log("clicked on company");
 						var company = $(this).data("company"); //company is related to the data-company
-						// when i click on a company route to /ajax/company-data
+						// when I click on a company route to /ajax/company-data
 						$.get(
 							"/ajax/company-data",
 							{company : company},
@@ -73,18 +73,6 @@ var vcs = new Bloodhound({
 								console.log(result);
 							}
 						);
-						// this is for when the iqt detail table ready for query
-						// $.get(
-						// "/ajax/iqt-company-detail",
-						// {company : company},
-						// function(result){
-						//		$("#iqt-company-results").html(result);
-						//		console.log(result);
-						// }
-						// );
-						// result will be html of company info w/ jinja
-						// insert result into 
-						
 					});
 				}
 			);

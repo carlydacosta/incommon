@@ -23,12 +23,9 @@ def process_login():
 	user_email = request.form.get('user-email')
 	password = request.form.get('user-password')
 	
-	user = dbsession.query(User).filter_by(password=password).filter_by(email=user_email).first()
-	# session.clear()
-	# print session["user"]
-	print session
+	user = dbsession.query(User).filter_by(email=user_email).first()
 	
-	if user:
+	if user and user.check_password(password):
 		session["user"] = user.email
 		return redirect("/vc-list") 
 	
@@ -52,17 +49,18 @@ def process_new_user():
 		email = user_email,
 		password=password
 		)
-	# user.hash_password(password)
+	
+	user.set_password(password)
 	
 	if dbsession.query(User).filter_by(email = user_email).first():
 		
-		return redirect('/')  # note i can send the return /index to javascript vs redirect it
+		return redirect('/')
 	
 	else:
 		dbsession.add(user)
     	dbsession.commit()
     	session["user"] = user.email
-    	return redirect("/vc-list")  # note i can send the return /index to javascript vs redirect it
+    	return redirect("/vc-list")
 
 
 @app.route("/vc-list")
@@ -78,20 +76,16 @@ def show_common_investments():
 	vc1 = request.args.get("vc1")
 	vc2 = request.args.get("vc2")
 	
-	print vc1, vc2, "what i am getting!!!!!!!!"
 	#query database for path
 	vc1_object = dbsession.query(VCList).filter_by(name = vc1).first()
 	vc1_path = vc1_object.permalink.encode("utf8")
 	
 	vc2_object = dbsession.query(VCList).filter_by(name = vc2).first()
 	vc2_path = vc2_object.permalink.encode("utf8")
+	
 	#use path to call the functions that return the common investments list
 	vc = class_objects.CompareVcs(vc1_path, vc2_path)
 	common_investments_list = list(vc.compare_investments())
-	
-	#create a list of dictionaries [{item1 name: , item1 id: }]
-	#
-	# common_investments_dict = [{"name":, "id"}
 
 	return render_template("common_investments.html",
 						common_investments_list=common_investments_list)
@@ -114,29 +108,6 @@ def show_company_data():
 							city=pc.city,
 							state=pc.state,
 							total_funding=format_currency(pc.total_funding))
-
-# @app.route("/ajax/iqt-company-detail", methods=['GET'])
-# def show_iqt_company_details():
-
-# 	pc_name = request.args.get("company")
-# 	print pc_name
-# 	# check for company name in iqtdetail table
-# 	company_object = dbsession.query(IqtDetail).filter_by(pc_name=pc_name)
-# 	print company_object
-
-# 	if company_object:
-# 		iqtpartner_first_name = company_object.partner_first_name
-# 		iqtpartner_last_name = company_object.partner_last_name
-# 		equity_percent_first_trans = company_object.equity_percent_first_trans
-# 		equity_percent_second_trans = company_object.equity_percent_second_trans
-# 		ownership_percent = company_object.ownership_percent
-
-# 		return render_template("iqt_pc_detail.html",
-# 						iqtpartner_first_name=iqtpartner_first_name,
-# 						iqtpartner_last_name=iqtpartner_last_name,
-# 						equity_percent_first_trans=equity_percent_first_trans,
-# 						equity_percent_second_trans=equity_percent_second_trans,
-# 						ownership_percent=ownership_percent)
 
 
 @app.route("/log-out", methods=['POST'])

@@ -12,7 +12,7 @@ HEADQUARTERS="headquarters"
 
 def load_investment_company(vc_data):
 	
-	# Query the Database for the uuid
+	# Check if VC is already in the database
 	uuid = table_class_objects.session.query(InvestmentCompany).filter_by(uuid = vc_data["uuid"]).first()
 	# If the uuid is already in the Database, do nothing
 	if uuid:
@@ -56,7 +56,7 @@ def load_investment_company(vc_data):
 
 
 def load_portfolio_company(pc_data):
-	# Query the Database for the uuid
+	# Check if PC is already in the database
 	uuid = table_class_objects.session.query(PortfolioCompany).filter_by(uuid = pc_data["uuid"]).first()
 
 	# If the uuid is already in the Database, do nothing
@@ -116,7 +116,6 @@ def load_portfolio_company(pc_data):
 
 def load_vc_list():
 # This seed function takes the data from memcache.  The function save_vc_list in the class_objects.py file gets the list from Crunchbase.
-# There is an easier way to do this, but for now this works...
 	mc = class_objects.memcache.Client(['127.0.0.1:11211'], debug=0)
 
 	for page in range(1, 19):
@@ -126,7 +125,7 @@ def load_vc_list():
 		vc_page = mc.get("vc_list_"+str(page))
 
 		print "Iterating through VCs..."
-		# each page has list of vc
+		# each page has a list of vc
 		for vc in vc_page["items"]:
 			# Query the Database for the name
 			name = table_class_objects.session.query(VCList).filter_by(name = vc["name"]).first()

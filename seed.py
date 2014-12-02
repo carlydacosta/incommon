@@ -150,6 +150,7 @@ def load_vc_list():
 
 
 def main():
+	class_objects.save_vc_list()
 	load_vc_list()
 	pass
 

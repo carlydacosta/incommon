@@ -1,8 +1,14 @@
-import memcache, requests, os, seed
+import pylibmc, requests, os, seed
 
 MEMCACHE_SERVERS = os.environ.get('MEMCACHE_SERVERS')
-# MEMCACHIER_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
-# MEMCACHIER_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
+MEMCACHIER_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
+MEMCACHIER_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
+
+if MEMCACHIER_PASSWORD and MEMCACHIER_USERNAME:
+	mc = pylibmc.Client([MEMCACHE_SERVERS], username=MEMCACHIER_USERNAME, password=MEMCACHIER_PASSWORD)
+
+else:
+	mc = pylibmc.Client([MEMCACHE_SERVERS])
 
 DATA="data"
 ITEMS="items"
@@ -49,7 +55,7 @@ class VC():
 	def __init__(self, vc_path):
 		if vc_path is None:
 			raise Exception("No VC path received to instantiate VC instance.")
-		self.mc = memcache.Client([MEMCACHE_SERVERS], debug=0)
+		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
 		self.vc_path = vc_path
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
@@ -57,7 +63,7 @@ class VC():
 	def get_data(self):
 		print "Getting VC data"
 		
-		cache = self.mc.get(self.vc_data_key)
+		cache = mc.get(self.vc_data_key)
 		
 		if cache is not None:
 			print "VC data was in cache."
@@ -67,14 +73,14 @@ class VC():
 		c = Crunchbase()
 
 		data = c.get_vc_data(self.vc_path)
-		self.mc.set(self.vc_data_key, data)
+		mc.set(self.vc_data_key, data)
 		seed.load_investment_company(data)
 		return data 
 
 	def get_investments(self):
 		print "Getting VC investments"
 
-		cache = self.mc.get(self.vc_investments_key)
+		cache = mc.get(self.vc_investments_key)
 
 		if cache is not None:
 			print "Investments were in cache."
@@ -83,7 +89,7 @@ class VC():
 		c = Crunchbase()
 
 		data = c.get_vc_portfolio(self.vc_path)
-		self.mc.set(self.vc_investments_key, data)
+		mc.set(self.vc_investments_key, data)
 		return data
 
 
@@ -93,14 +99,14 @@ class PortfolioCompany():
 	def __init__(self, pc_path):
 		if pc_path is None:
 			print "No PC path received to instantiate PC instance."
-		self.mc = memcache.Client([MEMCACHE_SERVERS], debug=0)
+		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
 		self.pc_path = pc_path
 		self.pc_data_key = "data-%s" % pc_path
 		
 	def get_data(self):
 		print "Getting PC data"
 		
-		cache = self.mc.get(self.pc_data_key)
+		cache = mc.get(self.pc_data_key)
 		if cache is not None:
 			print "PC data was in cache."
 			seed.load_portfolio_company(cache)
@@ -109,7 +115,7 @@ class PortfolioCompany():
 		c = Crunchbase()
 
 		data = c.get_pc_data(self.pc_path)
-		self.mc.set(self.pc_data_key, data)
+		mc.set(self.pc_data_key, data)
 		seed.load_portfolio_company(data)
 		return data
 
@@ -118,7 +124,7 @@ class PortfolioCompany():
 def save_vc_list():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
 	API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-	mc = memcache.Client([MEMCACHE_SERVERS], debug=0)	
+	# mc = pylibmc.Client([MEMCACHE_SERVERS])	
 	c = Crunchbase()
 
 	data = c.get_vc_list()
@@ -153,7 +159,7 @@ class Crunchbase():
 	
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-		self.mc = memcache.Client([MEMCACHE_SERVERS], debug=0)
+		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
 
 	def get_vc_list(self):
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)

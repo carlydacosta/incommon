@@ -116,13 +116,12 @@ def load_portfolio_company(pc_data):
 
 def load_vc_list():
 # This seed function takes the data from memcache.  The function save_vc_list in the class_objects.py file gets the list from Crunchbase.
-	mc = class_objects.memcache.Client(['127.0.0.1:11211'], debug=0)
-
+	
 	for page in range(1, 19):
 		print "#####################################  Page: ", page
 		print "Getting info from memcache..."
 		# get info from memcache by page
-		vc_page = mc.get("vc_list_"+str(page))
+		vc_page = class_objects.mc.get("vc_list_"+str(page))
 
 		print "Iterating through VCs..."
 		# each page has a list of vc

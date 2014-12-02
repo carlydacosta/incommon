@@ -1,6 +1,6 @@
 import pylibmc, requests, os, seed
 
-MEMCACHE_SERVERS = os.environ.get('MEMCACHE_SERVERS')
+MEMCACHE_SERVERS = os.environ.get('MEMCACHIER_SERVERS')
 MEMCACHIER_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
 MEMCACHIER_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
 

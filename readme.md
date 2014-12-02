@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Application designed to search for the common investments Portfolio Companies (PC) between two Venture Capital (VC) firms and view the details of each PC.
+Application designed to search for the common investment Portfolio Companies (PC) between two Venture Capital (VC) firms and view the details of each PC.
 
 ### Demonstrate my understanding of the following technologies after my time as a fellow at Hackbright Academy:
 * Integrating an API
@@ -90,7 +90,7 @@ The biggest pain point in my experience of building this application revolved ar
 * *Find the common PCs between them and make the API call for only those PCs*
 * *Make subsequent API calls for additional info relating only to them (image, funding round info)*
 * *Store the response for each call in  memcache and the DB*
-* *One step before each API call however: first check memcache and if not there then check the DB*
+* *One step before each API call however: first check memcache*
 
 Contact information
 ---------------------------------

@@ -37,7 +37,6 @@ def process_login():
 
 @app.route('/new-user', methods=['POST'])
 def process_new_user():
-	# session.clear()
 	
 	first_name = request.form.get('first-name')
 	last_name = request.form.get('last-name')
@@ -51,7 +50,7 @@ def process_new_user():
 		)
 	
 	user.set_password(password)
-	
+
 	if dbsession.query(User).filter_by(email = user_email).first():
 		
 		return redirect('/')
@@ -69,7 +68,7 @@ def index():
 	return render_template("vc_list.html")
 
 
-@app.route("/ajax/common-investments", methods=['GET'])  # route here when the 'find common investments' button is selected
+@app.route("/ajax/common-investments", methods=['GET'])
 def show_common_investments():
 	
 	#get company names from form

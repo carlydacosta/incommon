@@ -55,7 +55,6 @@ class VC():
 	def __init__(self, vc_path):
 		if vc_path is None:
 			raise Exception("No VC path received to instantiate VC instance.")
-		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
 		self.vc_path = vc_path
 		self.vc_data_key = "data-%s" % vc_path
 		self.vc_investments_key = "investments-%s" % vc_path
@@ -67,7 +66,6 @@ class VC():
 		
 		if cache is not None:
 			print "VC data was in cache."
-			seed.load_investment_company(cache)
 			return cache
 
 		c = Crunchbase()
@@ -99,7 +97,6 @@ class PortfolioCompany():
 	def __init__(self, pc_path):
 		if pc_path is None:
 			print "No PC path received to instantiate PC instance."
-		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
 		self.pc_path = pc_path
 		self.pc_data_key = "data-%s" % pc_path
 		
@@ -109,7 +106,6 @@ class PortfolioCompany():
 		cache = mc.get(self.pc_data_key)
 		if cache is not None:
 			print "PC data was in cache."
-			seed.load_portfolio_company(cache)
 			return cache
 
 		c = Crunchbase()
@@ -123,8 +119,7 @@ class PortfolioCompany():
 
 def save_vc_list():
 	URL_BASE = "http://api.crunchbase.com/v/2/"
-	API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-	# mc = pylibmc.Client([MEMCACHE_SERVERS])	
+	API_KEY = os.environ.get('CRUNCHBASE_API_KEY')	
 	c = Crunchbase()
 
 	data = c.get_vc_list()
@@ -159,8 +154,7 @@ class Crunchbase():
 	
 	def __init__(self):
 		self.API_KEY = os.environ.get('CRUNCHBASE_API_KEY')
-		# self.mc = pylibmc.Client([MEMCACHE_SERVERS])
-
+	
 	def get_vc_list(self):
 		#send request for vcs only to get the number of pages (this will include page 1 but we will just redo the request specifically by page #)
 		print "Queried Crunchbase for VC list"

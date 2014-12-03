@@ -1,4 +1,6 @@
-# InCommon application
+# [InCommon Application](http://incommonapp.herokuapp.com)
+
+http://incommonapp.herokuapp.com
 
 ## Purpose
 

@@ -47,11 +47,13 @@ $ . env/bin/activate
 <pre><code>(env)$ pip install -r requirements.txt
 </code></pre>
 
-4) Run the server
+4) Get a Crunchbase API key - https://developer.crunchbase.com/
+
+5) Run the server
     ```
     python incommonapp.py
     ```
-5) Browse the application at [http://localhost:5000]
+6) Browse the application at [http://localhost:5000]
 
 
 ## Breakdown

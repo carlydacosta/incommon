@@ -15,7 +15,7 @@ Application designed to search for the common investment Portfolio Companies (PC
 ## Stack
 
 * API: [Crunchbase](https://developer.crunchbase.com/)
-* Persistent storage: [SQLite](http://www.sqlite.org/)
+* Persistent storage: [PostgreSQL](http://www.postgresql.org/)
 * Non-persistent storage: [Memcached](http://memcached.org/)
 * Backend: [Python](https://www.python.org/)
 * [Flask web microframework](http://flask.pocoo.org/)
